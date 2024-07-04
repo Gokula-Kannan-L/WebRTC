@@ -37,22 +37,23 @@ const Meeting = () => {
                         {
                             remoteKeys?.length > 0 && remoteKeys.map( (key, index) => {
                                 const user = participants[key];
-                                if(!user.IsCurrentUser){
-                                    const peerConnection: RTCPeerConnection = user.peerConnection;
-                                    console.log('new User', index, ':  ', peerConnection)
-                                    const remoteStream = new MediaStream();
-                                    if(peerConnection){
-                                        console.log("peerConnection");
-                                        peerConnection.ontrack = (event: RTCTrackEvent) => {
-                                            event.streams[0].getTracks().forEach( (track) => {
-                                                console.log("Track-----",track)
-                                                remoteStream.addTrack(track);
-                                            })
-                                        }
-
-                                        return <div className='remote-tile' style={{padding: '10px', position: 'relative'}} key={index}><RemoteTile remotestream={remoteStream} index={index} username={user.username} video={user.video} avatar={user.avatar} /></div>
+                                console.log(user.IsCurrentUser)
+                                if(user.IsCurrentUser)
+                                    return;
+                                
+                                const peerConnection: RTCPeerConnection = user.peerConnection;
+                                console.log('new User', index, ':  ', peerConnection)
+                                const remoteStream = new MediaStream();
+                                if(peerConnection){
+                                    console.log("peerConnection");
+                                    peerConnection.ontrack = (event: RTCTrackEvent) => {
+                                        event.streams[0].getTracks().forEach( (track) => {
+                                            console.log("Track-----",track)
+                                            remoteStream.addTrack(track);
+                                        })
                                     }
-                                    
+
+                                    return <div className='remote-tile' style={{padding: '10px', position: 'relative'}} key={index}><RemoteTile remotestream={remoteStream} index={index} username={user.username} video={user.video} avatar={user.avatar} /></div>
                                 }
                                 
                             })

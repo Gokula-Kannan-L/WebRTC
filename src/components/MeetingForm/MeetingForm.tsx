@@ -62,11 +62,11 @@ const MeetingForm:FunctionComponent<MeetFormType> = ({Type}) => {
                 onChildChanged(updatePreferenceRef, (event) => {
                     let updateKey = String(event.key);
                     console.log("Update Child Key ---------",updateKey);
-                    UPDATE_PARTICIPANT({
+                    dispatch(UPDATE_PARTICIPANT({user: {
                         [key] : {
                             [updateKey]: event.val()
                         }
-                    })
+                    }}))
                 })
 
                 const {username, preference, userid, avatar} = snapshot.val();

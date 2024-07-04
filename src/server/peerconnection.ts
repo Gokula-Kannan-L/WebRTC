@@ -30,7 +30,7 @@ export const updateUserPreference = (userKey: string, preference: PreferenceType
 }
 
 export const createOffer = async(peerConnection: RTCPeerConnection, createdId: string, receiverId: string) => {
-    const offer = await peerConnection.createOffer();
+    
     
     const participantRef = getParticipantRef();
     const receiverRef = getChildRef(participantRef, receiverId);
@@ -42,6 +42,7 @@ export const createOffer = async(peerConnection: RTCPeerConnection, createdId: s
       } 
     }
 
+    const offer = await peerConnection.createOffer();
     await peerConnection.setLocalDescription(offer);
 
     const offerPayload = {
@@ -56,7 +57,7 @@ export const createOffer = async(peerConnection: RTCPeerConnection, createdId: s
 }
 
 export const createAnswer = async(peerConnection: RTCPeerConnection, currentUserKey: string, receiverId: string) => {
-    const answer = await peerConnection.createAnswer();
+   
     
     const participantRef = getParticipantRef();
     const receiverRef = getChildRef(participantRef, receiverId);
@@ -68,6 +69,7 @@ export const createAnswer = async(peerConnection: RTCPeerConnection, currentUser
       }
     }
 
+    const answer = await peerConnection.createAnswer();
     await peerConnection.setLocalDescription(answer);
 
     const answerPayload = {

@@ -94,6 +94,11 @@ export const meetingSlice = createSlice({
             }
         },
 
+        UPDATE_PARTICIPANT: (state, action: PayloadAction<any>) => {
+            let {payload} = action;
+            console.log("Update", payload);
+        },
+
         REMOVE_PARTICIPANT: (state, action:PayloadAction<string>) => {
             let {payload} = action;
             let participants = {...state.participants};
@@ -111,6 +116,6 @@ export const meetingSlice = createSlice({
     }
 });
 
-export const {SET_MEET_ID, SET_USER, UPDATE_USER, SET_LOCALSTREAM, ADD_PARTICIPANTS, REMOVE_PARTICIPANT, RESET} = meetingSlice.actions;
+export const {SET_MEET_ID, SET_USER, UPDATE_USER, SET_LOCALSTREAM, ADD_PARTICIPANTS, UPDATE_PARTICIPANT, REMOVE_PARTICIPANT, RESET} = meetingSlice.actions;
 
 export default meetingSlice.reducer;

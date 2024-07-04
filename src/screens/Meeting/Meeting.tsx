@@ -50,7 +50,7 @@ const Meeting = () => {
                                             })
                                         }
 
-                                        return <div className='remote-tile' style={{padding: '5px', position: 'relative'}} key={index}><RemoteTile remotestream={remoteStream} index={index} username={user.username} video={user.video} avatar={user.avatar} /></div>
+                                        return <div className='remote-tile' style={{padding: '10px', position: 'relative'}} key={index}><RemoteTile remotestream={remoteStream} index={index} username={user.username} video={user.video} avatar={user.avatar} /></div>
                                     }
                                     
                                 }

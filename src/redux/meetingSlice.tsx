@@ -33,6 +33,7 @@ export type ParticipantType = {
 }
 
 export interface MeetingState {
+    meetingId: string,
     currentUser: UserType | null
     localStream: MediaStream | null
     peerConnection?: RTCPeerConnection
@@ -41,6 +42,7 @@ export interface MeetingState {
 }
 
 const initialState: MeetingState  =  {
+    meetingId: '',
     currentUser: null,
     localStream: null,
     participants: {},
@@ -51,6 +53,10 @@ export const meetingSlice = createSlice({
     name: 'meeting',
     initialState,
     reducers: {
+        SET_MEET_ID: (state, action: PayloadAction<string>) => {
+            let {payload} = action;
+            state.meetingId = payload;
+        },
 
         SET_USER: (state, action: PayloadAction<UserType>) => {
             state.currentUser = action.payload;
@@ -105,6 +111,6 @@ export const meetingSlice = createSlice({
     }
 });
 
-export const {SET_USER, UPDATE_USER, SET_LOCALSTREAM, ADD_PARTICIPANTS, REMOVE_PARTICIPANT, RESET} = meetingSlice.actions;
+export const {SET_MEET_ID, SET_USER, UPDATE_USER, SET_LOCALSTREAM, ADD_PARTICIPANTS, REMOVE_PARTICIPANT, RESET} = meetingSlice.actions;
 
 export default meetingSlice.reducer;

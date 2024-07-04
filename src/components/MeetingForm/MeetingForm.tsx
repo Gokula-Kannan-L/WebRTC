@@ -2,11 +2,11 @@ import React, { FunctionComponent, useEffect, useRef, useState } from "react";
 import { Button, Container, Grid, TextField, Typography } from "@mui/material";
 import { getMediaStream, getRandomColor } from "../../helpers/helper";
 import { useDispatch } from "react-redux";
-import { UserType, SET_USER, SET_LOCALSTREAM, ADD_PARTICIPANTS, ParticipantType, REMOVE_PARTICIPANT, SET_MEET_ID } from "../../redux/meetingSlice";
+import { UserType, SET_USER, SET_LOCALSTREAM, ADD_PARTICIPANTS, ParticipantType, REMOVE_PARTICIPANT, SET_MEET_ID, UPDATE_PARTICIPANT } from "../../redux/meetingSlice";
 import { useNavigate } from "react-router-dom";
-import { InitializeMeeting, JoinMeeting } from "../../server/firebase";
+import { InitializeMeeting, JoinMeeting, getChildRef } from "../../server/firebase";
 import { v4 as uuidv4 } from 'uuid';
-import { DatabaseReference, onChildAdded, onChildRemoved } from "firebase/database";
+import { DatabaseReference, onChildAdded, onChildChanged, onChildRemoved } from "firebase/database";
 
 export enum FormType{
     CREATE = 1,
@@ -53,9 +53,23 @@ const MeetingForm:FunctionComponent<MeetFormType> = ({Type}) => {
             dispatch(SET_MEET_ID(String(meetingId)));
             dispatch(SET_LOCALSTREAM(localstream));
             dispatch(SET_USER(payload));
+
             onChildAdded(participantRef, (snapshot) => {
-                const {username, preference, userid, avatar} = snapshot.val();
                 let key: string = String(snapshot.key);
+
+                const updatePreferenceRef = getChildRef(getChildRef(participantRef, key), "preference");
+                console.log(updatePreferenceRef, updatePreferenceRef.parent);
+                onChildChanged(updatePreferenceRef, (event) => {
+                    let updateKey = String(event.key);
+                    UPDATE_PARTICIPANT({
+                        [key] : {
+                            [updateKey]: event.val()
+                        }
+                    })
+                })
+
+                const {username, preference, userid, avatar} = snapshot.val();
+                
         
                 let participant: ParticipantType = {
                     [key]: {
@@ -69,6 +83,7 @@ const MeetingForm:FunctionComponent<MeetFormType> = ({Type}) => {
                 dispatch(ADD_PARTICIPANTS(participant));
             });
 
+            
             onChildRemoved(participantRef, (snapshot) => {
                 if(snapshot.key){
                     dispatch(REMOVE_PARTICIPANT(snapshot.key));

@@ -1,6 +1,7 @@
 import store from "../redux/store";
-import { MeetingState, ParticipantType, PreferenceType, UserType } from "../redux/meetingSlice";
+import { ParticipantType, PreferenceType, UserType } from "../redux/meetingSlice";
 import { getChildRef, getParticipantRef, handleOnChildAdded, pushNewNode, updateData, writeData } from "./firebase";
+import { remove } from "firebase/database";
 
 
 
@@ -26,7 +27,13 @@ export const updateUserPreference = (userKey: string, preference: PreferenceType
   setTimeout(() => {
     updateData(userRef, preference);
   });
-  
+}
+
+export const leaveMeeting = (userKey: string) => {
+  const participantRef = getParticipantRef();
+  const userRef = getChildRef(participantRef, userKey);
+  remove(userRef);
+
 }
 
 export const createOffer = async(peerConnection: RTCPeerConnection, createdId: string, receiverId: string) => {

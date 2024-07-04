@@ -9,8 +9,9 @@ const LocalTile:FunctionComponent = () => {
     const user = useSelector((state:  RootState) => state.meeting.currentUser);
     
     useEffect( () => {
-        if(VideoRef.current && localStream?.active){
+        if (VideoRef.current) {
             VideoRef.current.srcObject = localStream;
+            VideoRef.current.muted = true;
         }
     },[localStream, user?.preference.video]);
 

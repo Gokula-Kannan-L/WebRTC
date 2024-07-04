@@ -10,10 +10,10 @@ type RemoteTileProps = {
 }
 const RemoteTile:FunctionComponent<RemoteTileProps> = ({remotestream, index, username, video, avatar}) => {
     const VideoRef = useRef<any>();
-  console.log(remotestream.getVideoTracks()[0])
+
     useEffect( () => {
         console.log(remotestream);
-        if(VideoRef.current && remotestream)
+        if(remotestream)
             VideoRef.current.srcObject = remotestream;
 
     },[remotestream]);
@@ -22,7 +22,7 @@ const RemoteTile:FunctionComponent<RemoteTileProps> = ({remotestream, index, use
         <>
             {true ?
             <>
-                <video className={`remote-user-${index}`} ref={VideoRef} autoPlay playsInline  width={'100%'} height={'250px'} style={{objectFit: 'cover', borderRadius: "20px", backgroundColor: 'black'}} controls={false} ></video>
+                <video className={`remote-user-${index}`} ref={VideoRef} autoPlay playsInline  width={'100%'} height={'10%'} style={{objectFit: 'cover', borderRadius: "20px", backgroundColor: 'black'}} controls={false} ></video>
                 <h5 style={{position: 'absolute', bottom: 0, left: '20px', color:'whitesmoke'}}>{username}</h5>
             </>
             :

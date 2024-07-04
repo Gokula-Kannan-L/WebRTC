@@ -29,6 +29,8 @@ export type ParticipantType = {
         avatar: string,
         IsCurrentUser?: boolean
         peerConnection?: RTCPeerConnection
+        remoteStream?: MediaStream;
+        onTrackSet?: boolean;
     }
 }
 
@@ -129,14 +131,22 @@ export const meetingSlice = createSlice({
             console.log('Remove Participant', state.participants);
         },
 
-        RESET: (state, action:PayloadAction) => {
-            console.log('Reset----------', action);
-            state = initialState;
-        }
+        ADD_REMOTESTREAM: (state, action: PayloadAction<{key: string, remoteStream: MediaStream}>) => {
+            const {payload} = action;
+            if(state.participants[payload.key]){
+                state.participants[payload.key] = {
+                    ...state.participants[payload.key],
+                    remoteStream: payload.remoteStream,
+                    onTrackSet: true
+                }
+            }
+        },
+
+        RESET: () => initialState,
 
     }
 });
 
-export const {SET_MEET_ID, SET_USER, UPDATE_USER, SET_LOCALSTREAM, ADD_PARTICIPANTS, UPDATE_PARTICIPANT, REMOVE_PARTICIPANT, RESET} = meetingSlice.actions;
+export const {SET_MEET_ID, SET_USER, UPDATE_USER, SET_LOCALSTREAM, ADD_PARTICIPANTS, UPDATE_PARTICIPANT, REMOVE_PARTICIPANT, ADD_REMOTESTREAM, RESET} = meetingSlice.actions;
 
 export default meetingSlice.reducer;

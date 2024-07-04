@@ -32,6 +32,16 @@ export type ParticipantType = {
     }
 }
 
+export type UpdateParticipant = {
+    user: {
+        [key: string]: {
+            audio?: boolean,
+            video?: boolean,
+            screen?: boolean,
+        }
+    }
+}
+
 export interface MeetingState {
     meetingId: string,
     currentUser: UserType | null
@@ -95,9 +105,18 @@ export const meetingSlice = createSlice({
             }
         },
 
-        UPDATE_PARTICIPANT: (state, action: PayloadAction<any>) => {
+        UPDATE_PARTICIPANT: (state, action: PayloadAction<UpdateParticipant>) => {
+
             let {payload} = action;
-            console.log("Update Particpant------------------", payload);
+            const userKey = Object.keys(payload.user)[0];
+
+            payload.user[userKey] = {
+                ...state.participants[userKey],
+                ...payload.user[userKey],
+            };
+
+            state.participants = { ...state.participants, ...payload.user };
+            console.log("Update Particpant------------------", state.participants);
         },
 
         REMOVE_PARTICIPANT: (state, action:PayloadAction<string>) => {

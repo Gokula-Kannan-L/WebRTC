@@ -8,12 +8,12 @@ import RemoteTile from '../../components/VideoTile/RemoteTile/RemoteTile';
 
 const Meeting = () => {
 
-    const AttendeesCount = useSelector( (state: RootState) => state.meeting.participantsCount);
+    // const AttendeesCount = useSelector( (state: RootState) => state.meeting.participantsCount);
     const participants = useSelector( (state: RootState) => state.meeting.participants);
 
     return(
         <Grid height={'100vh'} container display={'flex'} flexDirection={'row'} bgcolor={'#343434'}>
-            {AttendeesCount == 0 ? 
+            {false? 
                 <Grid item xs={12} padding={"20px"} bgcolor={'#343434'} height={'90%'}>
                     <LocalTile />
                 </Grid>

@@ -10,16 +10,6 @@ const Meeting = () => {
 
     const AttendeesCount = useSelector( (state: RootState) => state.meeting.participantsCount);
     const participants = useSelector( (state: RootState) => state.meeting.participants);
-    const [remoteKeys, setRemoteKeys] = useState<string[]>([]);
-
-    useEffect( () => {
-        console.log(Object.keys(participants));
-        if(participants)
-            setRemoteKeys(Object.keys(participants));
-
-    }, [participants]);
-
- 
 
     return(
         <Grid height={'100vh'} container display={'flex'} flexDirection={'row'} bgcolor={'#343434'}>
@@ -35,7 +25,7 @@ const Meeting = () => {
                     <Grid xs={3} item borderRadius={'20px'} bgcolor={'#28282B'} margin={'20px 20px 20px 0px'}>
                         <div className='remote-container' style={{overflowY: "auto", height: '100%'}}>
                         {
-                            remoteKeys?.length > 0 && remoteKeys.map( (key, index) => {
+                            Object.keys(participants).length > 0 && Object.keys(participants).map( (key, index) => {
                                 const user = participants[key];
                                 
                                 if(user?.IsCurrentUser)

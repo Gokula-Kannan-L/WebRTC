@@ -79,7 +79,6 @@ export const meetingSlice = createSlice({
         UPDATE_USER: (state, action: PayloadAction<PreferenceType>) => {
             const {payload} = action;
             if(state.currentUser?.key){
-                console.log("Update User ---", state.currentUser?.key);
                 updateUserPreference(state.currentUser.key, payload);
                 state.currentUser.preference = {...state.currentUser.preference, ...payload};
             }
@@ -118,7 +117,6 @@ export const meetingSlice = createSlice({
             };
 
             state.participants = { ...state.participants, ...payload.user };
-            console.log("Update Particpant------------------", state.participants);
         },
 
         REMOVE_PARTICIPANT: (state, action:PayloadAction<string>) => {
@@ -128,7 +126,6 @@ export const meetingSlice = createSlice({
             delete participants[payload];
             state.participantsCount--;
             state.participants = participants;
-            console.log('Remove Participant', state.participants);
         },
 
         ADD_REMOTESTREAM: (state, action: PayloadAction<{key: string, remoteStream: MediaStream}>) => {

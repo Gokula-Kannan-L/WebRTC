@@ -23,7 +23,7 @@ const Meeting = () => {
 
     return(
         <Grid height={'100vh'} container display={'flex'} flexDirection={'row'} bgcolor={'#343434'}>
-            {AttendeesCount == 1 ? 
+            {AttendeesCount == 0 ? 
                 <Grid item xs={12} padding={"20px"} bgcolor={'#343434'} height={'90%'}>
                     <LocalTile />
                 </Grid>

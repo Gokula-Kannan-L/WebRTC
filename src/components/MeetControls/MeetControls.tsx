@@ -35,15 +35,15 @@ const MeetControls:FunctionComponent = () => {
 
     return(
         <div className="meet-controls" style={{height: '100%',display: 'flex', justifyContent:'center', alignItems: 'center', gap: '20px'}}>
-            <Button variant='outlined' onClick={CopyMeetingID}>Copy MeetID</Button>
+            <Button variant='contained' onClick={CopyMeetingID} sx={{color:'whitesmoke'}}>Copy MeetID</Button>
             {localstate.currentUser?.preference.video ? 
-                <div onClick={ () => ToggelVideo(false)}><VideocamIcon sx={{fontSize:'40px', color: 'whitesmoke'}} /></div> :
-                <div onClick={ () => ToggelVideo(true)}><VideocamOffIcon sx={{fontSize:'40px', color: 'whitesmoke'}}/></div> 
+                <div onClick={ () => ToggelVideo(false)} style={{cursor: 'pointer'}}><VideocamIcon sx={{fontSize:'40px', color: 'whitesmoke'}} /></div> :
+                <div onClick={ () => ToggelVideo(true)} style={{cursor: 'pointer'}}><VideocamOffIcon sx={{fontSize:'40px', color: 'whitesmoke'}}/></div> 
             }
             {
                 localstate.currentUser?.preference.audio ? 
-                <div onClick={ () => ToggleAudio(false)}><MicIcon sx={{fontSize:'30px', color: 'whitesmoke'}}/></div> :
-                <div onClick={ () => ToggleAudio(true)}><MicOffIcon sx={{fontSize:'30px', color: 'whitesmoke'}}/></div>
+                <div onClick={ () => ToggleAudio(false)} style={{cursor: 'pointer'}}><MicIcon sx={{fontSize:'30px', color: 'whitesmoke'}}/></div> :
+                <div onClick={ () => ToggleAudio(true)} style={{cursor: 'pointer'}}><MicOffIcon sx={{fontSize:'30px', color: 'whitesmoke'}}/></div>
             }
             
         </div>

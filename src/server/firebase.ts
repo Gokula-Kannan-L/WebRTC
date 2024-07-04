@@ -39,7 +39,9 @@ export const InitializeMeeting = (stream: MediaStream, user: UserType) => {
         }
     });
 
-    return {participantRef, key};
+    let meetingId = dbRef.key;
+
+    return {participantRef, key, meetingId};
 }
 
 export const JoinMeeting = (meetingId: string, user: UserType) => {

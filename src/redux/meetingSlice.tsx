@@ -67,6 +67,7 @@ export const meetingSlice = createSlice({
         UPDATE_USER: (state, action: PayloadAction<PreferenceType>) => {
             const {payload} = action;
             if(state.currentUser?.key){
+                console.log("Update User ---", state.currentUser?.key);
                 updateUserPreference(state.currentUser.key, payload);
                 state.currentUser.preference = {...state.currentUser.preference, ...payload};
             }
@@ -96,7 +97,7 @@ export const meetingSlice = createSlice({
 
         UPDATE_PARTICIPANT: (state, action: PayloadAction<any>) => {
             let {payload} = action;
-            console.log("Update", payload);
+            console.log("Update Particpant------------------", payload);
         },
 
         REMOVE_PARTICIPANT: (state, action:PayloadAction<string>) => {

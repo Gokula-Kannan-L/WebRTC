@@ -2,7 +2,7 @@ import React, { FunctionComponent, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
 import RemoteTile from '../VideoTile/RemoteTile/RemoteTile';
-import { ADD_REMOTESTREAM } from '../../redux/meetingSlice';
+import { ADD_REMOTESTREAM, ParticipantType } from '../../redux/meetingSlice';
 
 const RemoteUsers: FunctionComponent = () => {
 
@@ -15,13 +15,13 @@ const RemoteUsers: FunctionComponent = () => {
             const user = participants[key];
             
             const peerConnection: RTCPeerConnection = user?.peerConnection;
-            console.log(Object.keys(participants).length, user);
+           
             if(peerConnection && !user?.onTrackSet){
                 const remoteStream = new MediaStream();
 
                 peerConnection.ontrack = (event: RTCTrackEvent) => {
                     event.streams[0].getTracks().forEach((track) => {
-                      console.log("Track-----", track);
+                     
                       remoteStream.addTrack(track);
                     });
                 };
@@ -37,11 +37,12 @@ const RemoteUsers: FunctionComponent = () => {
                     {
                         Object.keys(participants).length > 0 && Object.keys(participants).map( (key, index) => {
                             const user = participants[key];
-                            
+                
                             if(user?.IsCurrentUser)
                                 return;
                             
-                            return <div className='remote-tile' style={{padding: '10px', position: 'relative'}} key={index}><RemoteTile remotestream={user?.remoteStrem} index={index} username={user.username} video={user.video} avatar={user.avatar} /></div>  
+                            if(user?.remoteStream)
+                                return <div className='remote-tile' style={{padding: '10px', position: 'relative'}} key={index}><RemoteTile remotestream={user?.remoteStream} index={index} username={user.username} video={user.video} avatar={user.avatar} /></div>  
                         })
                     }
                     </div>

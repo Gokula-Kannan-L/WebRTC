@@ -72,7 +72,6 @@ const MeetingForm:FunctionComponent<MeetFormType> = ({Type}) => {
             onChildRemoved(participantRef, (snapshot) => {
                 if(snapshot.key){
                     dispatch(REMOVE_PARTICIPANT(snapshot.key));
-                    navigate('/');
                 }
                     
                 
@@ -97,7 +96,7 @@ const MeetingForm:FunctionComponent<MeetFormType> = ({Type}) => {
         
         if(localstream){
             const {participantRef, key} = JoinMeeting(MeetId, payload);
-            
+
             dispatch(SET_LOCALSTREAM(localstream));
             dispatch(SET_MEET_ID(MeetId));
 

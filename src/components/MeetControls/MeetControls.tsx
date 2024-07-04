@@ -6,6 +6,7 @@ import MicOffIcon from '@mui/icons-material/MicOff';
 import { useDispatch, useSelector } from "react-redux";
 import { UPDATE_USER } from "../../redux/meetingSlice";
 import { RootState } from "../../redux/store";
+import { Button } from "@mui/material";
 
 const MeetControls:FunctionComponent = () => {
     const dispatch = useDispatch();
@@ -25,9 +26,16 @@ const MeetControls:FunctionComponent = () => {
         }
     }
 
+    const CopyMeetingID = () => {
+        if(localstate.meetingId){
+            navigator.clipboard.writeText(localstate.meetingId);
+            alert('Meeting ID copied to clipboard');
+        }
+    }
 
     return(
         <div className="meet-controls" style={{height: '100%',display: 'flex', justifyContent:'center', alignItems: 'center', gap: '20px'}}>
+            <Button variant='outlined' onClick={CopyMeetingID}>Copy MeetID</Button>
             {localstate.currentUser?.preference.video ? 
                 <div onClick={ () => ToggelVideo(false)}><VideocamIcon sx={{fontSize:'40px', color: 'whitesmoke'}} /></div> :
                 <div onClick={ () => ToggelVideo(true)}><VideocamOffIcon sx={{fontSize:'40px', color: 'whitesmoke'}}/></div> 

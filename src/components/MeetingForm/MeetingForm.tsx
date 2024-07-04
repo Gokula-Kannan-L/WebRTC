@@ -105,7 +105,7 @@ const MeetingForm:FunctionComponent<MeetFormType> = ({Type}) => {
             userid: uuidv4(),
             avatar: getRandomColor(),
             preference: {
-                audio: false,
+                audio: true,
                 video: true,
                 screen: false
             }

@@ -49,7 +49,7 @@ const MeetingForm:FunctionComponent<MeetFormType> = ({Type}) => {
         }
 
         if(localstream){
-            console.log("Create User Stream --------------",localstream);
+            
             const {participantRef, key, meetingId} = InitializeMeeting(localstream, payload);
             payload.key = key;
             dispatch(SET_MEET_ID(String(meetingId)));
@@ -60,10 +60,10 @@ const MeetingForm:FunctionComponent<MeetFormType> = ({Type}) => {
                 let key: string = String(snapshot.key);
 
                 const updatePreferenceRef = getChildRef(getChildRef(participantRef, key), "preference");
-                console.log("Update Child =============",updatePreferenceRef, updatePreferenceRef.parent);
+               
                 onChildChanged(updatePreferenceRef, (event) => {
                     let updateKey = String(event.key);
-                    console.log("Update Child Key ---------",updateKey);
+                    
                     dispatch(UPDATE_PARTICIPANT({user: {
                         [key] : {
                             [updateKey]: event.val()
@@ -113,7 +113,7 @@ const MeetingForm:FunctionComponent<MeetFormType> = ({Type}) => {
 
         
         if(localstream){
-            console.log("Join User Stream --------------",localstream);
+            
             const {participantRef, key} = JoinMeeting(MeetId, payload);
 
             dispatch(SET_LOCALSTREAM(localstream));
@@ -124,7 +124,7 @@ const MeetingForm:FunctionComponent<MeetFormType> = ({Type}) => {
 
             onChildAdded(participantRef, (snapshot) => {
                 const {username, preference, userid} = snapshot.val();
-                console.log("Child Added------------", snapshot.val());
+                
                 let key: string = String(snapshot.key);
         
                 let participant: ParticipantType = {

@@ -2,7 +2,7 @@ import React, { FunctionComponent, useEffect, useRef, useState } from "react";
 import { Button, Container, Grid, TextField, Typography } from "@mui/material";
 import { getMediaStream, getRandomColor } from "../../helpers/helper";
 import { useDispatch } from "react-redux";
-import { UserType, SET_USER, SET_LOCALSTREAM, ADD_PARTICIPANTS, ParticipantType, REMOVE_PARTICIPANT } from "../../redux/meetingSlice";
+import { UserType, SET_USER, SET_LOCALSTREAM, ADD_PARTICIPANTS, ParticipantType, REMOVE_PARTICIPANT, SET_MEET_ID } from "../../redux/meetingSlice";
 import { useNavigate } from "react-router-dom";
 import { InitializeMeeting, JoinMeeting } from "../../server/firebase";
 import { v4 as uuidv4 } from 'uuid';
@@ -48,8 +48,9 @@ const MeetingForm:FunctionComponent<MeetFormType> = ({Type}) => {
         }
 
         if(localstream){
-            const {participantRef, key} = InitializeMeeting(localstream, payload);
+            const {participantRef, key, meetingId} = InitializeMeeting(localstream, payload);
             payload.key = key;
+            dispatch(SET_MEET_ID(String(meetingId)));
             dispatch(SET_LOCALSTREAM(localstream));
             dispatch(SET_USER(payload));
             onChildAdded(participantRef, (snapshot) => {
@@ -96,7 +97,9 @@ const MeetingForm:FunctionComponent<MeetFormType> = ({Type}) => {
         
         if(localstream){
             const {participantRef, key} = JoinMeeting(MeetId, payload);
+            
             dispatch(SET_LOCALSTREAM(localstream));
+            dispatch(SET_MEET_ID(MeetId));
 
             payload.key = key;
             dispatch(SET_USER(payload));

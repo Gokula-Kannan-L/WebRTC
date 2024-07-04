@@ -14,15 +14,15 @@ const MeetControls:FunctionComponent = () => {
     
     const ToggelVideo = (video: boolean) => {
         if(localstate.localStream){
-            dispatch(UPDATE_USER({video}));
             localstate.localStream.getVideoTracks()[0].enabled = video;
+            dispatch(UPDATE_USER({video}));
         }
     }
 
     const ToggleAudio = (audio: boolean) => {
         if(localstate.localStream){
-            dispatch(UPDATE_USER({audio}));
             localstate.localStream.getAudioTracks()[0].enabled = audio;
+            dispatch(UPDATE_USER({audio}));
         }
     }
 

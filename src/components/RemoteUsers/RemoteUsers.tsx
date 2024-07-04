@@ -34,18 +34,22 @@ const RemoteUsers: FunctionComponent = () => {
 
     return(
         <div className='remote-container' style={{overflowY: "auto", height: '100%'}}>
-                    {
-                        Object.keys(participants).length > 0 && Object.keys(participants).map( (key, index) => {
-                            const user = participants[key];
-                
-                            if(user?.IsCurrentUser)
-                                return;
-                            
-                            if(user?.remoteStream)
-                                return <div className='remote-tile' style={{padding: '10px', position: 'relative'}} key={index}><RemoteTile remotestream={user?.remoteStream} index={index} username={user.username} video={user.video} avatar={user.avatar} /></div>  
-                        })
-                    }
-                    </div>
+            {
+                Object.keys(participants).length > 0 && Object.keys(participants).map( (key, index) => {
+                    const user = participants[key];
+        
+                    if(user?.IsCurrentUser)
+                        return;
+                    
+                    if(user?.remoteStream)
+                        return( 
+                            <div className='remote-tile' style={{padding: '10px', position: 'relative'}} key={index}>
+                                <RemoteTile remotestream={user?.remoteStream} index={index} username={user.username} audio={user.audio} video={user.video} avatar={user.avatar} />
+                            </div>
+                        );
+                })
+            }
+        </div>
     )
 }
 

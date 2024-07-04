@@ -31,7 +31,6 @@ export const updateUserPreference = (userKey: string, preference: PreferenceType
 
 export const createOffer = async(peerConnection: RTCPeerConnection, createdId: string, receiverId: string) => {
     
-    
     const participantRef = getParticipantRef();
     const receiverRef = getChildRef(participantRef, receiverId);
 

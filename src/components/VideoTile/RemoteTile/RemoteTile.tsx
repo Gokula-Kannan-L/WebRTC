@@ -12,10 +12,7 @@ const RemoteTile:FunctionComponent<RemoteTileProps> = ({remotestream, index, use
     const VideoRef = useRef<any>();
 
     useEffect( () => {
-        console.log(remotestream);
-        if(remotestream)
-            VideoRef.current.srcObject = remotestream;
-
+        VideoRef.current.srcObject = remotestream;
     },[remotestream]);
 
     return(

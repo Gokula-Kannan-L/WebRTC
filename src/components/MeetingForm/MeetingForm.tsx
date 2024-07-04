@@ -2,7 +2,7 @@ import React, { FunctionComponent, useEffect, useRef, useState } from "react";
 import { Button, Container, Grid, TextField, Typography } from "@mui/material";
 import { getMediaStream, getRandomColor } from "../../helpers/helper";
 import { useDispatch } from "react-redux";
-import { UserType, SET_USER, SET_LOCALSTREAM, ADD_PARTICIPANTS, ParticipantType, REMOVE_PARTICIPANT, SET_MEET_ID, UPDATE_PARTICIPANT } from "../../redux/meetingSlice";
+import { UserType, SET_USER, SET_LOCALSTREAM, ADD_PARTICIPANTS, ParticipantType, REMOVE_PARTICIPANT, SET_MEET_ID, UPDATE_PARTICIPANT, RESET } from "../../redux/meetingSlice";
 import { useNavigate } from "react-router-dom";
 import { InitializeMeeting, JoinMeeting, getChildRef } from "../../server/firebase";
 import { v4 as uuidv4 } from 'uuid';
@@ -35,7 +35,8 @@ const MeetingForm:FunctionComponent<MeetFormType> = ({Type}) => {
 
 
     const handleCreateMeeting = () => {
-
+        dispatch(RESET());
+       
         let payload: UserType = {
             username,
             userid: uuidv4(),
@@ -48,6 +49,7 @@ const MeetingForm:FunctionComponent<MeetFormType> = ({Type}) => {
         }
 
         if(localstream){
+            console.log("Create User Stream --------------",localstream);
             const {participantRef, key, meetingId} = InitializeMeeting(localstream, payload);
             payload.key = key;
             dispatch(SET_MEET_ID(String(meetingId)));
@@ -89,8 +91,6 @@ const MeetingForm:FunctionComponent<MeetFormType> = ({Type}) => {
                 if(snapshot.key){
                     dispatch(REMOVE_PARTICIPANT(snapshot.key));
                 }
-                    
-                
             });
             
             navigate('/meeting');
@@ -98,6 +98,8 @@ const MeetingForm:FunctionComponent<MeetFormType> = ({Type}) => {
     }
 
     const handleJoinMeeting = () => {
+        dispatch(RESET());
+
         let payload: UserType = {
             username,
             userid: uuidv4(),
@@ -111,6 +113,7 @@ const MeetingForm:FunctionComponent<MeetFormType> = ({Type}) => {
 
         
         if(localstream){
+            console.log("Join User Stream --------------",localstream);
             const {participantRef, key} = JoinMeeting(MeetId, payload);
 
             dispatch(SET_LOCALSTREAM(localstream));
@@ -121,6 +124,7 @@ const MeetingForm:FunctionComponent<MeetFormType> = ({Type}) => {
 
             onChildAdded(participantRef, (snapshot) => {
                 const {username, preference, userid} = snapshot.val();
+                console.log("Child Added------------", snapshot.val());
                 let key: string = String(snapshot.key);
         
                 let participant: ParticipantType = {

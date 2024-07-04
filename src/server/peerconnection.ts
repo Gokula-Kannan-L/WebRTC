@@ -23,8 +23,10 @@ const servers = {
 export const updateUserPreference = (userKey: string, preference: PreferenceType) => {
   const participantRef = getParticipantRef();
   const userRef = getChildRef(getChildRef(participantRef, userKey), 'preference');
-  console.log(userRef);
-  updateData(userRef, preference);
+  setTimeout(() => {
+    updateData(userRef, preference);
+  });
+  
 }
 
 export const createOffer = async(peerConnection: RTCPeerConnection, createdId: string, receiverId: string) => {

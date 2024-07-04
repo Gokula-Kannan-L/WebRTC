@@ -120,12 +120,13 @@ export const meetingSlice = createSlice({
         },
 
         REMOVE_PARTICIPANT: (state, action:PayloadAction<string>) => {
+            
             let {payload} = action;
             let participants = {...state.participants};
             delete participants[payload];
             state.participantsCount--;
-            state = {...state, participants};
-
+            state.participants = participants;
+            console.log('Remove Participant', state.participants);
         },
 
         RESET: (state, action:PayloadAction) => {

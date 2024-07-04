@@ -38,15 +38,17 @@ const Meeting = () => {
                             remoteKeys?.length > 0 && remoteKeys.map( (key, index) => {
                                 const user = participants[key];
                                 
-                                if(user.IsCurrentUser)
+                                if(user?.IsCurrentUser)
                                     return;
                                 
-                                console.log(user.IsCurrentUser);
-                                const peerConnection: RTCPeerConnection = user.peerConnection;
+                                console.log(user?.IsCurrentUser, user?.peerConnection);
+                                const peerConnection: RTCPeerConnection = user?.peerConnection;
                                 console.log('new User', index, ':  ', peerConnection)
-                                const remoteStream = new MediaStream();
+                                
                                 if(peerConnection){
                                     console.log("peerConnection");
+                                    const remoteStream = new MediaStream();
+                                    
                                     peerConnection.ontrack = (event: RTCTrackEvent) => {
                                         event.streams[0].getTracks().forEach( (track) => {
                                             console.log("Track-----",track)

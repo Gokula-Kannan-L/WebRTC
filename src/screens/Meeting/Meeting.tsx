@@ -37,10 +37,11 @@ const Meeting = () => {
                         {
                             remoteKeys?.length > 0 && remoteKeys.map( (key, index) => {
                                 const user = participants[key];
-                                console.log(user.IsCurrentUser)
+                                
                                 if(user.IsCurrentUser)
                                     return;
                                 
+                                console.log(user.IsCurrentUser);
                                 const peerConnection: RTCPeerConnection = user.peerConnection;
                                 console.log('new User', index, ':  ', peerConnection)
                                 const remoteStream = new MediaStream();

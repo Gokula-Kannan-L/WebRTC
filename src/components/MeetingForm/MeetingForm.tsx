@@ -58,7 +58,7 @@ const MeetingForm:FunctionComponent<MeetFormType> = ({Type}) => {
 
             onChildAdded(participantRef, (snapshot) => {
                 let key: string = String(snapshot.key);
-
+                console.log("Chid Added key----------", snapshot);
                 const updatePreferenceRef = getChildRef(getChildRef(participantRef, key), "preference");
                 console.log("participantRef -------",participantRef)
                 console.log("updateUserRef -------",participantRef)

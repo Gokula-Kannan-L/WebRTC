@@ -117,6 +117,7 @@ export const meetingSlice = createSlice({
             };
             console.log("Update Participants----------", payload.user);
             state.participants = { ...state.participants, ...payload.user };
+            console.log(state.participants)
         },
 
         REMOVE_PARTICIPANT: (state, action:PayloadAction<string>) => {

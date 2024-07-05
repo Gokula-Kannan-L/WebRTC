@@ -12,7 +12,7 @@ type RemoteTileProps = {
     audio: boolean
 }
 const RemoteTile:FunctionComponent<RemoteTileProps> = ({remotestream, index, username, video, avatar, audio}) => {
-    console.log("video audio", video, audio)
+
     const VideoRef = useRef<any>(null);
     useEffect( () => {
         if(video && VideoRef.current)

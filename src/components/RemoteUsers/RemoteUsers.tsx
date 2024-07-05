@@ -38,7 +38,6 @@ const RemoteUsers: FunctionComponent = () => {
                     if(user?.IsCurrentUser)
                         return;
                     
-                    console.log("RemoteUsers----------", user);
                     if(user?.remoteStream)
                         return( 
                             <div className='remote-tile' style={{padding: '10px', position: 'relative'}} key={index}>

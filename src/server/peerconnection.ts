@@ -3,8 +3,6 @@ import { ParticipantType, PreferenceType, UserType } from "../redux/meetingSlice
 import { getChildRef, getParticipantRef, handleOnChildAdded, pushNewNode, updateData, writeData } from "./firebase";
 import { remove } from "firebase/database";
 
-
-
 const servers = {
     iceServers: [
       {

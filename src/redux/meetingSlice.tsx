@@ -139,7 +139,9 @@ export const meetingSlice = createSlice({
             }
         },
 
-        RESET: () => initialState,
+        RESET: (state) => {
+            state = initialState
+        },
 
     }
 });

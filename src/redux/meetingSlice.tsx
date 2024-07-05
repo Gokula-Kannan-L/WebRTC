@@ -115,7 +115,7 @@ export const meetingSlice = createSlice({
                 ...state.participants[userKey],
                 ...payload.user[userKey],
             };
-
+            console.log("Update Participants----------", payload.user);
             state.participants = { ...state.participants, ...payload.user };
         },
 

@@ -62,6 +62,7 @@ const MeetingForm:FunctionComponent<MeetFormType> = ({Type}) => {
                 const updatePreferenceRef = getChildRef(getChildRef(participantRef, key), "preference");
                
                 onChildChanged(updatePreferenceRef, (event) => {
+                    console.log("Child Changed--------------", event)
                     let updateKey = String(event.key);
                     
                     dispatch(UPDATE_PARTICIPANT({user: {

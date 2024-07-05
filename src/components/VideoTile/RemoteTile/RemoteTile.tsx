@@ -12,7 +12,7 @@ type RemoteTileProps = {
     audio: boolean
 }
 const RemoteTile:FunctionComponent<RemoteTileProps> = ({remotestream, index, username, video, avatar, audio}) => {
-    console.log(video)
+    console.log("video audio", video, audio)
     const VideoRef = useRef<any>(null);
     useEffect( () => {
         if(video && VideoRef.current)
@@ -23,6 +23,10 @@ const RemoteTile:FunctionComponent<RemoteTileProps> = ({remotestream, index, use
         <>
             {video ?
             <>
+                {audio ? 
+                    <MicIcon sx={{position: 'absolute', top: 0, right: 0, color: 'whitesmoke', padding: '15px'}}/> :
+                    <MicOffIcon sx={{position: 'absolute', top: 0, right: 0, color: 'whitesmoke', padding: '15px'}}/>
+                }
                 <video className={`remote-user-${index}`} ref={VideoRef} autoPlay playsInline  width={'100%'} height={'200px'} style={{objectFit: 'cover', borderRadius: "20px", backgroundColor: 'black'}} controls={false} ></video>
                 <h5 style={{position: 'absolute', bottom: 0, left: '20px', color:'whitesmoke'}}>{username}</h5>
             </>

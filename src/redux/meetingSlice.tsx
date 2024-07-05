@@ -91,8 +91,7 @@ export const meetingSlice = createSlice({
         },
 
         ADD_PARTICIPANTS: (state, action: PayloadAction<ParticipantType>) => {
-            const {payload} = action; 
-            console.log("ADD Participants", payload);
+            const {payload} = action;
             if(state.currentUser){
                 let currentUserId = state.currentUser.userid;
                 let participantkey = Object.keys(payload)[0];
@@ -118,7 +117,7 @@ export const meetingSlice = createSlice({
                 ...state.participants[userKey],
                 ...payload.user[userKey],
             };
-            console.log("Update Participants----------", payload.user);
+           
             state.participants = { ...state.participants, ...payload.user };
             console.log(state.participants)
         },

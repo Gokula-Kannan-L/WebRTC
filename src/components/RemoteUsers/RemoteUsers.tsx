@@ -10,7 +10,6 @@ const RemoteUsers: FunctionComponent = () => {
     const dispatch = useDispatch();
 
     useEffect( () => {
-        
         Object.keys(participants).forEach( (key) => {
             const user = participants[key];
             
@@ -21,13 +20,11 @@ const RemoteUsers: FunctionComponent = () => {
 
                 peerConnection.ontrack = (event: RTCTrackEvent) => {
                     event.streams[0].getTracks().forEach((track) => {
-                     
                       remoteStream.addTrack(track);
                     });
                 };
 
                 dispatch(ADD_REMOTESTREAM({ key, remoteStream}));
-
             }   
         })
     }, [participants])
@@ -41,6 +38,7 @@ const RemoteUsers: FunctionComponent = () => {
                     if(user?.IsCurrentUser)
                         return;
                     
+                    console.log("RemoteUsers----------", user);
                     if(user?.remoteStream)
                         return( 
                             <div className='remote-tile' style={{padding: '10px', position: 'relative'}} key={index}>

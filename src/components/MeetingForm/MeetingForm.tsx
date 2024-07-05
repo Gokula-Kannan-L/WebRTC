@@ -80,7 +80,7 @@ const MeetingForm:FunctionComponent<MeetFormType> = ({Type}) => {
                         username,
                         userid,
                         avatar,
-                        ...preference
+                        preference
                     }
                 }
         

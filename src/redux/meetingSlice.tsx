@@ -23,9 +23,11 @@ export type ParticipantType = {
     [key: string]: {
         username: string,
         userid: string,
-        audio: boolean,
-        video: boolean,
-        screen: boolean,
+        preference: {
+            audio: boolean,
+            video: boolean,
+            screen: boolean,
+        }
         avatar: string,
         IsCurrentUser?: boolean
         peerConnection?: RTCPeerConnection
@@ -79,8 +81,8 @@ export const meetingSlice = createSlice({
         UPDATE_USER: (state, action: PayloadAction<PreferenceType>) => {
             const {payload} = action;
             if(state.currentUser?.key){
-                updateUserPreference(state.currentUser.key, payload);
                 state.currentUser.preference = {...state.currentUser.preference, ...payload};
+                updateUserPreference(state.currentUser.key, payload);
             }
         },
 
@@ -90,6 +92,7 @@ export const meetingSlice = createSlice({
 
         ADD_PARTICIPANTS: (state, action: PayloadAction<ParticipantType>) => {
             const {payload} = action; 
+            console.log("ADD Participants", payload);
             if(state.currentUser){
                 let currentUserId = state.currentUser.userid;
                 let participantkey = Object.keys(payload)[0];

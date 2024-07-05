@@ -40,11 +40,11 @@ const RemoteUsers: FunctionComponent = () => {
                     if(user?.IsCurrentUser)
                         return;
                     
-                    console.log(user)
+                     
                     if(user?.remoteStream)
                         return( 
                             <div className='remote-tile' style={{padding: '10px', position: 'relative'}} key={index}>
-                                <RemoteTile remotestream={user?.remoteStream} index={index} username={user.username} audio={user.audio} video={user.video} avatar={user.avatar} />
+                                <RemoteTile  remoteUser={user} index={index} />
                             </div>
                         );
                 })

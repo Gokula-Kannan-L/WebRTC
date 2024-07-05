@@ -17,18 +17,18 @@ const RemoteTile:FunctionComponent<RemoteTileProps> = ({remotestream, index, use
     useEffect( () => {
         if(video && VideoRef.current)
             VideoRef.current.srcObject = remotestream;
-    },[video]);
+    },[video, remotestream]);
 
     return(
         <>
             {video ?
             <>
                 {audio ? 
-                    <MicIcon sx={{position: 'absolute', top: 0, right: 0, color: 'whitesmoke', padding: '15px'}}/> :
-                    <MicOffIcon sx={{position: 'absolute', top: 0, right: 0, color: 'whitesmoke', padding: '15px'}}/>
+                    <MicIcon sx={{position: 'absolute', top: 0, right: 0, color: 'whitesmoke', padding: '25px'}}/> :
+                    <MicOffIcon sx={{position: 'absolute', top: 0, right: 0, color: 'whitesmoke', padding: '25px'}}/>
                 }
                 <video className={`remote-user-${index}`} ref={VideoRef} autoPlay playsInline  width={'100%'} height={'200px'} style={{objectFit: 'cover', borderRadius: "20px", backgroundColor: 'black'}} controls={false} ></video>
-                <h5 style={{position: 'absolute', bottom: 0, left: '20px', color:'whitesmoke'}}>{username}</h5>
+                <h5 style={{position: 'absolute', bottom: 0, left: "25px",   color:'whitesmoke'}}>{username}</h5>
             </>
             :
             <div style={{width: '100%', height: '200px', position: 'relative' ,display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: "20px", backgroundColor: 'black'}}>

@@ -22,6 +22,8 @@ const servers = {
 export const updateUserPreference = (userKey: string, preference: PreferenceType) => {
   const participantRef = getParticipantRef();
   const userRef = getChildRef(getChildRef(participantRef, userKey), 'preference');
+
+  console.log("Update Preference------");
   setTimeout(() => {
     updateData(userRef, preference);
   });

@@ -27,6 +27,8 @@ const RemoteUsers: FunctionComponent = () => {
                 dispatch(ADD_REMOTESTREAM({ key, remoteStream}));
             }   
         })
+
+        console.log(participants)
     }, [participants])
 
     return(
@@ -38,6 +40,7 @@ const RemoteUsers: FunctionComponent = () => {
                     if(user?.IsCurrentUser)
                         return;
                     
+                    console.log(user)
                     if(user?.remoteStream)
                         return( 
                             <div className='remote-tile' style={{padding: '10px', position: 'relative'}} key={index}>

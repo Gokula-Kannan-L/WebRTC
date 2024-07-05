@@ -62,7 +62,7 @@ const MeetingForm:FunctionComponent<MeetFormType> = ({Type}) => {
                 const userRef = getChildRef(participantRef, key);
                
                 onChildChanged(userRef, (event) => {
-                    console.log("Child Changed--------------", event.val())
+                    
                     let updateKey = String(event.key);
                     console.log(updateKey)
                     dispatch(UPDATE_PARTICIPANT({user: {
@@ -70,11 +70,10 @@ const MeetingForm:FunctionComponent<MeetFormType> = ({Type}) => {
                             [updateKey]: event.val()
                         }
                     }}))
-                })
+                });
 
                 const {username, preference, userid, avatar} = snapshot.val();
-                
-        
+            
                 let participant: ParticipantType = {
                     [key]: {
                         username,
@@ -124,15 +123,26 @@ const MeetingForm:FunctionComponent<MeetFormType> = ({Type}) => {
             dispatch(SET_USER(payload));
 
             onChildAdded(participantRef, (snapshot) => {
-                const {username, preference, userid} = snapshot.val();
                 
                 let key: string = String(snapshot.key);
-        
+                const userRef = getChildRef(participantRef, key);
+               
+                onChildChanged(userRef, (event) => {
+                    let updateKey = String(event.key);
+                    dispatch(UPDATE_PARTICIPANT({user: {
+                        [String(userRef.key)] : {
+                            [updateKey]: event.val()
+                        }
+                    }}))
+                });
+              
+                const {username, avatar, preference, userid} = snapshot.val();
                 let participant: ParticipantType = {
                     [key]: {
                         username,
                         userid,
-                        ...preference
+                        avatar,
+                        preference
                     }
                 }
         

@@ -6,7 +6,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter } from 'react-router-dom';
 import './index.css';
-
+console.log(process.env.REACT_APP_API_KEY);
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );

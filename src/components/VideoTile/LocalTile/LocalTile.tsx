@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useRef } from 'react';
+import React, { FunctionComponent, RefObject, SetStateAction, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../redux/store';
 import { Avatar } from '@mui/material';
@@ -13,12 +13,13 @@ const LocalTile:FunctionComponent = () => {
             VideoRef.current.srcObject = localStream;
             VideoRef.current.muted = true;
         }
+
     },[localStream, user?.preference.video]);
 
     return(
         <div className='local-tile' style={{height: '100%', position: 'relative'}}>
             {user?.preference.video ? 
-                <video ref={VideoRef} autoPlay playsInline width={'100%'} height={'100%'} style={{objectFit: 'cover', borderRadius: "20px", backgroundColor: 'black'}} controls={false} muted={true}></video> : 
+                <video ref={VideoRef} id="local-videotile" autoPlay playsInline width={'100%'} height={'100%'} style={{objectFit: 'cover', borderRadius: "20px", backgroundColor: 'black'}} controls={false} muted={true}></video> : 
                 <div style={{width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: "20px", backgroundColor: 'black'}}>
                     <Avatar sx={{fontSize: '100px', height: '200px', width: '200px', backgroundColor: user?.avatar }} >{user?.username?.[0].toLocaleUpperCase()}</Avatar>
                 </div>

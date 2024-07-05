@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { RefObject, useRef, useState } from 'react';
 import { Grid } from '@mui/material';
 import LocalTile from '../../components/VideoTile/LocalTile/LocalTile';
 import MeetControls from '../../components/MeetControls/MeetControls';
@@ -8,6 +8,7 @@ import { RootState } from '../../redux/store';
 
 const Meeting = () => {
     const participants = useSelector( (state: RootState) => state.meeting.participantsCount);
+    
     return(
         <Grid height={'100vh'} container display={'flex'} flexDirection={'row'} bgcolor={'#343434'}>
             {participants > 1 ? 

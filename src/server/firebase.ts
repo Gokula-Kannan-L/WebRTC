@@ -2,9 +2,10 @@ import { initializeApp } from "firebase/app";
 import {DataSnapshot, DatabaseReference, Query, child, getDatabase, onChildAdded, onChildRemoved, onDisconnect, onValue, push, ref, set, update} from 'firebase/database';
 import {  UserType } from "../redux/meetingSlice";
 
+
 const firebaseConfig = {
-    apiKey: 'AIzaSyBTduOqZ8FOqHut4MmHTxhC395u5kFkWY8',
-    databaseURL: 'https://video-conference-af72a-default-rtdb.asia-southeast1.firebasedatabase.app/'
+    apiKey: process.env.REACT_APP_API_KEY,
+    databaseURL: process.env.REACT_APP_DATABASE_URL
 }
 
 

@@ -5,7 +5,7 @@ import MicIcon from '@mui/icons-material/Mic';
 import MicOffIcon from '@mui/icons-material/MicOff';
 import CallEndIcon from '@mui/icons-material/CallEnd';
 import { useDispatch, useSelector } from "react-redux";
-import { RESET, UPDATE_USER } from "../../redux/meetingSlice";
+import { REMOVE_PARTICIPANT, RESET, UPDATE_USER } from "../../redux/meetingSlice";
 import { RootState } from "../../redux/store";
 import { Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
@@ -38,13 +38,18 @@ const MeetControls:FunctionComponent = () => {
         }
     }
 
-    const handleLeave = () => {
-        if(localstate.localStream){
-           localstate.localStream.getTracks().forEach( (track: MediaStreamTrack) => {
-                track.stop();
-           });
-            dispatch(RESET());
-            navigate('/');
+    const handleLeave = async() => {
+        if(localstate.localStream && localstate.currentUser?.key){
+            const video: HTMLVideoElement = document.getElementById('local-videotile') as HTMLVideoElement;
+            if(video)
+                video.srcObject = null;
+            localstate.localStream.getTracks().forEach( async(track: MediaStreamTrack) => {
+                await track.stop();
+            });
+            
+           leaveMeeting(localstate.currentUser?.key);
+           dispatch(RESET());   
+           window.location.reload();
         }
        
     }

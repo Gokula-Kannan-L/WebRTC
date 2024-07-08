@@ -11,7 +11,7 @@ const LocalTile:FunctionComponent = () => {
     useEffect( () => {
         if (VideoRef.current) {
             VideoRef.current.srcObject = localStream;
-            VideoRef.current.muted = true;
+            VideoRef.current.muted = user?.preference.audio;
         }
 
     },[localStream, user?.preference.video]);
@@ -19,7 +19,7 @@ const LocalTile:FunctionComponent = () => {
     return(
         <div className='local-tile' style={{height: '100%', position: 'relative'}}>
             {user?.preference.video ? 
-                <video ref={VideoRef} id="local-videotile" autoPlay playsInline width={'100%'} height={'100%'} style={{objectFit: 'cover', borderRadius: "20px", backgroundColor: 'black', transform: "rotateY(180deg)"}} controls={false} muted={true}></video> : 
+                <video ref={VideoRef} id="local-videotile" autoPlay playsInline width={'100%'} height={'100%'} style={{objectFit: 'cover', borderRadius: "20px", backgroundColor: 'black', transform: "rotateY(180deg)"}} controls={false} ></video> : 
                 <div style={{width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: "20px", backgroundColor: 'black'}}>
                     <Avatar sx={{fontSize: '100px', height: '200px', width: '200px', backgroundColor: user?.avatar }} >{user?.username?.[0].toLocaleUpperCase()}</Avatar>
                 </div>

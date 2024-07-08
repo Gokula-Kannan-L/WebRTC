@@ -23,8 +23,9 @@ const MeetControls:FunctionComponent = () => {
             localstate.localStream.getTracks().find( (track) => {
                 if(track.kind == 'video'){
                     track.enabled = video;
+                    dispatch(UPDATE_USER({video}));
             }})
-            dispatch(UPDATE_USER({video}));
+            
         }
     }
 
@@ -34,8 +35,9 @@ const MeetControls:FunctionComponent = () => {
             localstate.localStream.getTracks().find( (track) => {
                 if(track.kind == 'audio'){
                     track.enabled = audio;
+                    dispatch(UPDATE_USER({audio}));
             }})
-            dispatch(UPDATE_USER({audio}));
+            
         }
     }
 

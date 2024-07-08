@@ -19,14 +19,22 @@ const MeetControls:FunctionComponent = () => {
     
     const ToggelVideo = (video: boolean) => {
         if(localstate.localStream){
-            localstate.localStream.getVideoTracks()[0].enabled = video;
+            // localstate.localStream.getVideoTracks()[0].enabled = video;
+            localstate.localStream.getTracks().find( (track) => {
+                if(track.kind == 'video'){
+                    track.enabled = video;
+            }})
             dispatch(UPDATE_USER({video}));
         }
     }
 
     const ToggleAudio = (audio: boolean) => {
         if(localstate.localStream){
-            localstate.localStream.getAudioTracks()[0].enabled = audio;
+            // localstate.localStream.getAudioTracks()[0].enabled = audio;
+            localstate.localStream.getTracks().find( (track) => {
+                if(track.kind == 'audio'){
+                    track.enabled = audio;
+            }})
             dispatch(UPDATE_USER({audio}));
         }
     }

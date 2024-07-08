@@ -23,6 +23,7 @@ const RemoteTile:FunctionComponent<RemoteUserType> = ({remoteUser, index}) => {
     useEffect( () => {
         if(VideoRef.current)
             VideoRef.current.srcObject = remoteUser.remoteStream;
+            VideoRef.current.muted = remoteUser?.preference.audio;
     },[remoteUser]);
 
     return(

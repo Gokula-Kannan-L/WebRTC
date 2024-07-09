@@ -17,7 +17,8 @@ const MeetControls:FunctionComponent = () => {
     const dispatch = useDispatch();
 
     const localstate = useSelector( (state: RootState) => state.meeting);
-  
+    const participants = useSelector( (state: RootState) => state.meeting.participants);
+
     useEffect( () => {
         console.log("Local Peer Connection --------",localstate.peerConnection);
     },[localstate.peerConnection])
@@ -54,7 +55,16 @@ const MeetControls:FunctionComponent = () => {
     }
 
     const handleScreenShare = async() => {
-       await getDisplayMedia({video: true, audio: true}).then( (value) => console.log(value)).catch( error => {
+       await getDisplayMedia({video: true, audio: true}).then( (value) => {
+            console.log(value.getVideoTracks())
+            Object.keys(participants).forEach( (key) => {
+                const user = participants[key];
+                const peerConnection: RTCPeerConnection = user?.peerConnection;
+                if(peerConnection && localstate?.localStream){
+                    peerConnection.addTrack(value.getVideoTracks()[0], localstate?.localStream)
+                }
+            })
+        }).catch( error => {
         console.log(error);
        })
     }

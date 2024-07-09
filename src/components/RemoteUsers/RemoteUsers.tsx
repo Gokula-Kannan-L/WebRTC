@@ -10,6 +10,7 @@ const RemoteUsers: FunctionComponent = () => {
     const dispatch = useDispatch();
 
     useEffect( () => {
+        console.log(participants);
         Object.keys(participants).forEach( (key) => {
             const user = participants[key];
             const peerConnection: RTCPeerConnection = user?.peerConnection;
@@ -18,6 +19,7 @@ const RemoteUsers: FunctionComponent = () => {
                 const remoteStream = new MediaStream();
 
                 peerConnection.ontrack = (event: RTCTrackEvent) => {
+                    console.log("Remote User :", event);
                     event.streams[0].getTracks().forEach((track) => {
                       remoteStream.addTrack(track);
                     });

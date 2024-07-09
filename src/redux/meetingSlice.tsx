@@ -103,11 +103,13 @@ export const meetingSlice = createSlice({
                 if(state.localStream && !payload[participantkey].IsCurrentUser){
                     createconnection(state.currentUser, payload, state.localStream);
                 }
-                state.participants= {...state.participants, ...payload};
-
-                if(payload[participantkey].peerConnection && state.currentUser.key === participantkey)
+                
+                if(state.currentUser.key === participantkey && payload[participantkey]?.peerConnection){
+                    console.log('ADD Particpant', payload);
                     state.peerConnection = payload[participantkey].peerConnection;
-
+                }
+                    
+                state.participants= {...state.participants, ...payload};
                 state.participantsCount++;
             }
         },

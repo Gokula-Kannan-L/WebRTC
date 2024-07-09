@@ -7,10 +7,10 @@ const servers: RTCConfiguration = {
     iceServers: [
       {
         urls: [
-          process.env.REACT_TURN_URL ? process.env.REACT_TURN_URL : "",
+          process.env.REACT_APP_TURN_URL ? process.env.REACT_APP_TURN_URL : "",
         ],
-        credential:  process.env.REACT_TURN_CREDENTIAL,
-        username: process.env.REACT_TURN_USERNAME
+        credential:  process.env.REACT_APP_TURN_CREDENTIAL,
+        username: process.env.REACT_APP_TURN_USERNAME
       },
     ],
     iceCandidatePoolSize: 10,

@@ -50,7 +50,7 @@ export interface MeetingState {
     meetingId: string,
     currentUser: UserType | null
     localStream: MediaStream | null
-    peerConnection?: RTCPeerConnection
+    peerConnection?: RTCPeerConnection //Current User
     participants: any
     participantsCount: number
 }
@@ -92,15 +92,18 @@ export const meetingSlice = createSlice({
 
         ADD_PARTICIPANTS: (state, action: PayloadAction<ParticipantType>) => {
             const {payload} = action;
+
             if(state.currentUser){
                 let currentUserId = state.currentUser.userid;
                 let participantkey = Object.keys(payload)[0];
 
                 if(currentUserId == payload[participantkey].userid){
                     payload[participantkey].IsCurrentUser = true;
+                    if(payload[participantkey].peerConnection)
+                        state.peerConnection = payload[participantkey].peerConnection;
                 }
 
-                if(state.localStream && !action.payload[participantkey].IsCurrentUser){
+                if(state.localStream && !payload[participantkey].IsCurrentUser){
                     createconnection(state.currentUser, payload, state.localStream);
                 }
                 state.participants= {...state.participants, ...payload};
@@ -119,7 +122,6 @@ export const meetingSlice = createSlice({
             };
            
             state.participants = { ...state.participants, ...payload.user };
-            console.log(state.participants)
         },
 
         REMOVE_PARTICIPANT: (state, action:PayloadAction<string>) => {

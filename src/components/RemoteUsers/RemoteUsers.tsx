@@ -12,7 +12,6 @@ const RemoteUsers: FunctionComponent = () => {
     useEffect( () => {
         Object.keys(participants).forEach( (key) => {
             const user = participants[key];
-            
             const peerConnection: RTCPeerConnection = user?.peerConnection;
            
             if(peerConnection && !user?.onTrackSet){
@@ -28,7 +27,6 @@ const RemoteUsers: FunctionComponent = () => {
             }   
         })
 
-        console.log(participants)
     }, [participants])
 
     return(

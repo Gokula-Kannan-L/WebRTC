@@ -15,10 +15,11 @@ import { getDisplayMedia } from "../../helpers/helper";
 
 const MeetControls:FunctionComponent = () => {
     const dispatch = useDispatch();
-    const navigate = useNavigate();
 
     const localstate = useSelector( (state: RootState) => state.meeting);
-    
+    const participants = useSelector( (state: RootState) => state.meeting.participants)
+    console.log("Local Peer Connection --------",localstate.peerConnection);
+
     const ToggelVideo = (video: boolean) => {
         if(localstate.localStream){
             // localstate.localStream.getVideoTracks()[0].enabled = video;

@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent, useEffect } from "react";
 import VideocamIcon from '@mui/icons-material/Videocam';
 import VideocamOffIcon from '@mui/icons-material/VideocamOff';
 import MicIcon from '@mui/icons-material/Mic';
@@ -17,8 +17,10 @@ const MeetControls:FunctionComponent = () => {
     const dispatch = useDispatch();
 
     const localstate = useSelector( (state: RootState) => state.meeting);
-    const participants = useSelector( (state: RootState) => state.meeting.participants)
-    console.log("Local Peer Connection --------",localstate.peerConnection);
+  
+    useEffect( () => {
+        console.log("Local Peer Connection --------",localstate.peerConnection);
+    },[localstate.peerConnection])
 
     const ToggelVideo = (video: boolean) => {
         if(localstate.localStream){

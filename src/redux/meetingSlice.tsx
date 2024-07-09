@@ -94,11 +94,11 @@ export const meetingSlice = createSlice({
             const {payload} = action;
 
             if(state.currentUser){
-                let currentUserId = state.currentUser.userid;
                 let participantkey = Object.keys(payload)[0];
 
-                if(currentUserId == payload[participantkey].userid){
+                if(state.currentUser.key && state.currentUser.key === participantkey){
                     payload[participantkey].IsCurrentUser = true;
+                    console.log("Current User :" , payload);
                     if(payload[participantkey].peerConnection)
                         state.peerConnection = payload[participantkey].peerConnection;
                 }

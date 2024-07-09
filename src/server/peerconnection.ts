@@ -3,17 +3,14 @@ import { ParticipantType, PreferenceType, UserType } from "../redux/meetingSlice
 import { getChildRef, getParticipantRef, handleOnChildAdded, pushNewNode, updateData, writeData } from "./firebase";
 import { remove } from "firebase/database";
 
-const servers = {
+const servers: RTCConfiguration = {
     iceServers: [
       {
         urls: [
-          "stun:stun1.l.google.com:19302",
-          "stun:stun2.l.google.com:19302",
-          "stun:stun.l.google.com:19302",
-          "stun:stun3.l.google.com:19302",
-          "stun:stun4.l.google.com:19302",
-          "stun:stun.services.mozilla.com",
+          "turn:13.235.181.77:443?transport=tcp",
         ],
+        credential: 'Welcome@ta',
+        username: 'tringapps'
       },
     ],
     iceCandidatePoolSize: 10,
@@ -22,8 +19,6 @@ const servers = {
 export const updateUserPreference = (userKey: string, preference: PreferenceType) => {
   const participantRef = getParticipantRef();
   const userRef = getChildRef(getChildRef(participantRef, userKey), 'preference');
-
-  console.log("Update Preference------");
   setTimeout(() => {
     updateData(userRef, preference);
   });

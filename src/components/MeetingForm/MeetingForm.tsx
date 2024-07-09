@@ -26,11 +26,18 @@ const MeetingForm:FunctionComponent<MeetFormType> = ({Type}) => {
     const navigate = useNavigate();
 
     const getStream = async() => {
-        const stream = await getMediaStream({audio: true, video: true});
-        if(stream){
-            videoRef.current.srcObject = stream;
-            setLocalStream(stream);
+        try{
+            const stream = await getMediaStream({audio: true, video: true});
+            if(stream){
+                videoRef.current.srcObject = stream;
+                setLocalStream(stream);
+            }
+        }catch(error){
+           console.log('Error', error);
+
         }
+       
+        
     }
 
 
@@ -95,6 +102,9 @@ const MeetingForm:FunctionComponent<MeetFormType> = ({Type}) => {
             
             navigate('/meeting');
         }
+        else{
+            getStream(); 
+        }
     }
 
     const handleJoinMeeting = () => {
@@ -156,6 +166,9 @@ const MeetingForm:FunctionComponent<MeetFormType> = ({Type}) => {
             
             
             navigate('/meeting');
+        }
+        else{
+            getStream(); 
         }
     }
 

@@ -7,10 +7,10 @@ const servers: RTCConfiguration = {
     iceServers: [
       {
         urls: [
-          "turn:13.235.181.77:443?transport=tcp",
+          process.env.REACT_TURN_URL ? process.env.REACT_TURN_URL : "",
         ],
-        credential: 'Welcome@ta',
-        username: 'tringapps'
+        credential:  process.env.REACT_TURN_CREDENTIAL,
+        username: process.env.REACT_TURN_USERNAME
       },
     ],
     iceCandidatePoolSize: 10,

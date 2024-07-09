@@ -4,12 +4,14 @@ import VideocamOffIcon from '@mui/icons-material/VideocamOff';
 import MicIcon from '@mui/icons-material/Mic';
 import MicOffIcon from '@mui/icons-material/MicOff';
 import CallEndIcon from '@mui/icons-material/CallEnd';
+import PresentToAllIcon from '@mui/icons-material/PresentToAll';
 import { useDispatch, useSelector } from "react-redux";
-import { REMOVE_PARTICIPANT, RESET, UPDATE_USER } from "../../redux/meetingSlice";
+import { RESET, UPDATE_USER } from "../../redux/meetingSlice";
 import { RootState } from "../../redux/store";
 import { Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { leaveMeeting } from "../../server/peerconnection";
+import { getDisplayMedia } from "../../helpers/helper";
 
 const MeetControls:FunctionComponent = () => {
     const dispatch = useDispatch();
@@ -48,6 +50,12 @@ const MeetControls:FunctionComponent = () => {
         }
     }
 
+    const handleScreenShare = async() => {
+       await getDisplayMedia({video: true, audio: true}).then( (value) => console.log(value)).catch( error => {
+        console.log(error);
+       })
+    }
+
     const handleLeave = async() => {
         if(localstate.localStream && localstate.currentUser?.key){
             const video: HTMLVideoElement = document.getElementById('local-videotile') as HTMLVideoElement;
@@ -76,6 +84,7 @@ const MeetControls:FunctionComponent = () => {
                 <div onClick={ () => ToggleAudio(false)} style={{cursor: 'pointer'}}><MicIcon sx={{fontSize:'25px', color: 'whitesmoke', borderRadius: '50%', backgroundColor: '#F4C430', padding: '10px'}}/></div> :
                 <div onClick={ () => ToggleAudio(true)} style={{cursor: 'pointer'}}><MicOffIcon sx={{fontSize:'25px', color: 'whitesmoke', borderRadius: '50%', backgroundColor: '#D2042D', padding: '10px'}}/></div>
             }
+            <div onClick={handleScreenShare} style={{cursor: 'pointer'}}><PresentToAllIcon sx={{fontSize:'25px', color: 'whitesmoke', borderRadius: '50%', backgroundColor: '#F4C430', padding: '10px'}}/></div>
             <div onClick={handleLeave} style={{cursor: 'pointer'}}><CallEndIcon sx={{fontSize:'25px', color: 'whitesmoke', borderRadius: '50%', backgroundColor: '#D2042D', padding: '10px'}}/></div>
         </div>
     )

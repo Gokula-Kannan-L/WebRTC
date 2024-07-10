@@ -28,7 +28,7 @@ const RemoteTile:FunctionComponent<RemoteUserType> = ({remoteUser, index}) => {
         if(AudioRef.current){
             AudioRef.current.srcObject = remoteUser.remoteStream;
         }
-
+        console.log(remoteUser.remoteStream.getVideoTracks());
     },[remoteUser]);
 
     return(

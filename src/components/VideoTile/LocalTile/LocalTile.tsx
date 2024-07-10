@@ -1,7 +1,7 @@
 import React, { FunctionComponent, RefObject, SetStateAction, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../redux/store';
-import { Avatar } from '@mui/material';
+import { Avatar, Typography } from '@mui/material';
 
 const LocalTile:FunctionComponent = () => {
     const VideoRef = useRef<any>(null);

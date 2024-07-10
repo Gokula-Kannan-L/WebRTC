@@ -17,7 +17,6 @@ const RemoteUsers: FunctionComponent = () => {
            
             if(peerConnection && !user?.onTrackSet){
                 const remoteStream = new MediaStream();
-
                 peerConnection.ontrack = (event: RTCTrackEvent) => {
                     console.log("Remote User :", event);
                     event.streams[0].getTracks().forEach((track) => {

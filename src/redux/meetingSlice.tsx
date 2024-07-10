@@ -52,7 +52,12 @@ export interface MeetingState {
     localStream: MediaStream | null
     peerConnection?: RTCPeerConnection //Current User
     participants: any
-    participantsCount: number
+    participantsCount: number,
+    IsScreenSharing: boolean
+    ShareUser?: {
+        username: string,
+        userkey: string
+    }
 }
 
 const initialState: MeetingState  =  {
@@ -60,7 +65,8 @@ const initialState: MeetingState  =  {
     currentUser: null,
     localStream: null,
     participants: {},
-    participantsCount: 0
+    participantsCount: 0,
+    IsScreenSharing: false
 }
 
 export const meetingSlice = createSlice({
@@ -146,6 +152,17 @@ export const meetingSlice = createSlice({
             }
         },
 
+        UPDATE_SCREEN_SHARE: (state, action: PayloadAction<{userkey:string, screen: boolean}>) => {
+            let {payload} = action;
+            state.IsScreenSharing = payload.screen;
+            if(payload.screen){
+                state.ShareUser = {
+                    userkey: payload.userkey,
+                    username: state.participants[payload.userkey],
+                }
+            }
+        },
+
         RESET: (state) => {
             state = initialState
         },
@@ -153,6 +170,6 @@ export const meetingSlice = createSlice({
     }
 });
 
-export const {SET_MEET_ID, SET_USER, UPDATE_USER, SET_LOCALSTREAM, ADD_PARTICIPANTS, UPDATE_PARTICIPANT, REMOVE_PARTICIPANT, ADD_REMOTESTREAM, RESET} = meetingSlice.actions;
+export const {SET_MEET_ID, SET_USER, UPDATE_USER, SET_LOCALSTREAM, ADD_PARTICIPANTS, UPDATE_PARTICIPANT, REMOVE_PARTICIPANT, ADD_REMOTESTREAM, UPDATE_SCREEN_SHARE, RESET} = meetingSlice.actions;
 
 export default meetingSlice.reducer;

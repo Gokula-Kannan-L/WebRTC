@@ -5,13 +5,13 @@ import MicIcon from '@mui/icons-material/Mic';
 import MicOffIcon from '@mui/icons-material/MicOff';
 import CallEndIcon from '@mui/icons-material/CallEnd';
 import PresentToAllIcon from '@mui/icons-material/PresentToAll';
+import CancelPresentationIcon from '@mui/icons-material/CancelPresentation';
 import { useDispatch, useSelector } from "react-redux";
-import { RESET, UPDATE_USER } from "../../redux/meetingSlice";
+import { RESET, SET_LOCALSTREAM, UPDATE_SCREEN_SHARE, UPDATE_USER } from "../../redux/meetingSlice";
 import { RootState } from "../../redux/store";
 import { Button } from "@mui/material";
-import { useNavigate } from "react-router-dom";
 import { leaveMeeting } from "../../server/peerconnection";
-import { getDisplayMedia } from "../../helpers/helper";
+import { getDisplayMedia, getMediaStream } from "../../helpers/helper";
 
 const MeetControls:FunctionComponent = () => {
     const dispatch = useDispatch();
@@ -19,12 +19,8 @@ const MeetControls:FunctionComponent = () => {
     const localstate = useSelector( (state: RootState) => state.meeting);
     const participants = useSelector( (state: RootState) => state.meeting.participants);
 
-    useEffect( () => {
-        console.log("Local Peer Connection --------",localstate.peerConnection);
-    },[localstate.peerConnection])
-
     const ToggelVideo = (video: boolean) => {
-        if(localstate.localStream){
+        if(localstate.localStream && !localstate.currentUser?.preference.screen){
             // localstate.localStream.getVideoTracks()[0].enabled = video;
             localstate.localStream.getTracks().find( (track) => {
                 if(track.kind == 'video'){
@@ -54,19 +50,41 @@ const MeetControls:FunctionComponent = () => {
         }
     }
 
-    const handleScreenShare = async() => {
-       await getDisplayMedia({video: true, audio: true}).then( (value) => {
-            console.log(value.getVideoTracks())
-            Object.keys(participants).forEach( (key) => {
-                const user = participants[key];
-                const peerConnection: RTCPeerConnection = user?.peerConnection;
-                if(peerConnection && localstate?.localStream){
-                    peerConnection.addTrack(value.getVideoTracks()[0], localstate?.localStream)
-                }
-            })
-        }).catch( error => {
-        console.log(error);
-       })
+    const UpdateRemoteStreams = (stream: MediaStream) => {
+        Object.keys(participants).forEach( (key) => {
+            const user = participants[key];
+            const peerConnection: RTCPeerConnection = user?.peerConnection;
+            if(peerConnection){
+                let userConnection = peerConnection.getSenders().find((s) => (s.track ? s.track.kind === "video" : false));
+                userConnection?.replaceTrack(stream.getVideoTracks()[0]);
+                // userConnection?.setStreams(stream);
+            }
+        })
+    }
+
+    const handleScreenShare = async(screen: boolean) => {
+        if(screen){
+            await getDisplayMedia({video: true, audio: true}).then( (stream) => {
+                // stream.getVideoTracks()[0].onended = async() => {
+                //     await getMediaStream({audio: localstate.currentUser?.preference.audio, video: localstate.currentUser?.preference.video}).then( stream => {
+                //         UpdateRemoteStreams(stream);
+                //     });
+                // }
+                dispatch(SET_LOCALSTREAM(stream));
+                UpdateRemoteStreams(stream);
+            }).catch( error => {
+            console.log(error);
+           });
+        }else{
+            await getMediaStream({audio: true, video: true}).then( stream => {
+                dispatch(SET_LOCALSTREAM(stream));
+                UpdateRemoteStreams(stream);
+            }).catch( error => {
+                console.log(error);
+            });
+        }
+        dispatch(UPDATE_USER({screen}));
+        // dispatch(UPDATE_SCREEN_SHARE(screen));
     }
 
     const handleLeave = async() => {
@@ -88,7 +106,8 @@ const MeetControls:FunctionComponent = () => {
     return(
         <div className="meet-controls" style={{height: '100%',display: 'flex', justifyContent:'center', alignItems: 'center', gap: '30px'}}>
             <Button variant='contained' onClick={CopyMeetingID} sx={{color:'whitesmoke', fontSize:'15px', backgroundColor:'#F4C430', fontWeight: 500, textTransform: 'none'}}>Copy MeetID</Button>
-            {localstate.currentUser?.preference.video ? 
+            {   
+                localstate.currentUser?.preference.video ? 
                 <div onClick={ () => ToggelVideo(false)} style={{cursor: 'pointer'}}><VideocamIcon sx={{fontSize:'25px', color: 'whitesmoke', borderRadius: '50%', backgroundColor: '#F4C430', padding: '10px'}} /></div> :
                 <div onClick={ () => ToggelVideo(true)} style={{cursor: 'pointer'}}><VideocamOffIcon sx={{fontSize:'25px', color: 'whitesmoke', borderRadius: '50%', backgroundColor: '#D2042D', padding: '10px'}}/></div> 
             }
@@ -97,7 +116,11 @@ const MeetControls:FunctionComponent = () => {
                 <div onClick={ () => ToggleAudio(false)} style={{cursor: 'pointer'}}><MicIcon sx={{fontSize:'25px', color: 'whitesmoke', borderRadius: '50%', backgroundColor: '#F4C430', padding: '10px'}}/></div> :
                 <div onClick={ () => ToggleAudio(true)} style={{cursor: 'pointer'}}><MicOffIcon sx={{fontSize:'25px', color: 'whitesmoke', borderRadius: '50%', backgroundColor: '#D2042D', padding: '10px'}}/></div>
             }
-            <div onClick={handleScreenShare} style={{cursor: 'pointer'}}><PresentToAllIcon sx={{fontSize:'25px', color: 'whitesmoke', borderRadius: '50%', backgroundColor: '#F4C430', padding: '10px'}}/></div>
+            {   
+                localstate.currentUser?.preference.screen ?   
+                <div onClick={() => handleScreenShare(false)} style={{cursor: 'pointer'}}><CancelPresentationIcon sx={{fontSize:'25px', color: 'whitesmoke', borderRadius: '50%', backgroundColor: '#D2042D', padding: '10px'}}/></div> :
+                <div onClick={() => handleScreenShare(true)} style={{cursor: 'pointer'}}><PresentToAllIcon sx={{fontSize:'25px', color: 'whitesmoke', borderRadius: '50%', backgroundColor: '#F4C430', padding: '10px'}}/></div>
+            }
             <div onClick={handleLeave} style={{cursor: 'pointer'}}><CallEndIcon sx={{fontSize:'25px', color: 'whitesmoke', borderRadius: '50%', backgroundColor: '#D2042D', padding: '10px'}}/></div>
         </div>
     )

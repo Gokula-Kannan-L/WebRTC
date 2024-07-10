@@ -7,6 +7,7 @@ import { ADD_REMOTESTREAM, ParticipantType } from '../../redux/meetingSlice';
 const RemoteUsers: FunctionComponent = () => {
 
     const participants = useSelector( (state: RootState) => state.meeting.participants);
+    const localState = useSelector((state:RootState) => state.meeting)
     const dispatch = useDispatch();
 
     useEffect( () => {
@@ -14,18 +15,18 @@ const RemoteUsers: FunctionComponent = () => {
         Object.keys(participants).forEach( (key) => {
             const user = participants[key];
             const peerConnection: RTCPeerConnection = user?.peerConnection;
-           console.log("perrconnection------------------------", peerConnection)
+          
             if(peerConnection && !user?.onTrackSet){
                 const remoteStream = new MediaStream();
                 peerConnection.ontrack = (event: RTCTrackEvent) => {
                     event.streams[0].getTracks().forEach((track) => {
-                      remoteStream.addTrack(track);
+                        remoteStream.addTrack(track);
                     });
                 };
 
                 dispatch(ADD_REMOTESTREAM({ key, remoteStream}));
             }   
-        })
+        });
 
     }, [participants])
 

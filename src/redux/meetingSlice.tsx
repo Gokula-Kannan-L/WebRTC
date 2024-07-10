@@ -110,7 +110,17 @@ export const meetingSlice = createSlice({
                 }
               
                 if(state.currentUser.key === participantkey && payload[participantkey]?.peerConnection){
+                    console.log("NEVER CALL------------------");
                     state.peerConnection = payload[participantkey].peerConnection;
+                }
+
+                if(payload[participantkey]?.peerConnection){
+                    const peerConnection:RTCPeerConnection = payload[participantkey]?.peerConnection as RTCPeerConnection;
+                    peerConnection.ontrack = (event: RTCTrackEvent) => {
+                        event.streams[0].getTracks().forEach((track) => {
+                            console.log(track);
+                        });
+                    };
                 }
                     
                 state.participants = {...state.participants, ...payload};
@@ -142,6 +152,7 @@ export const meetingSlice = createSlice({
 
         ADD_REMOTESTREAM: (state, action: PayloadAction<{key: string, remoteStream: MediaStream}>) => {
             const {payload} = action;
+            console.log(payload.remoteStream);
             if(state.participants[payload.key]){
                 state.participants[payload.key] = {
                     ...state.participants[payload.key],

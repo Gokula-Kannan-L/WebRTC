@@ -101,7 +101,6 @@ export const meetingSlice = createSlice({
 
             if(state.currentUser){
                 let participantkey = Object.keys(payload)[0];
-
                 if(state.currentUser.key && state.currentUser.key === participantkey){
                     payload[participantkey].IsCurrentUser = true;
                 }
@@ -154,12 +153,11 @@ export const meetingSlice = createSlice({
 
         UPDATE_SCREEN_SHARE: (state, action: PayloadAction<{userkey:string, screen: boolean}>) => {
             let {payload} = action;
-            console.log("UPDATE_SCREEN_SHARE --------", payload);
             state.IsScreenSharing = payload.screen;
             if(payload.screen){
                 state.ShareUser = {
                     userkey: payload.userkey,
-                    username: state.participants[payload.userkey],
+                    username: state.participants[payload.userkey].username,
                 }
             }
         },

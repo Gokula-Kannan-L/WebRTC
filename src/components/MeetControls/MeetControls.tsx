@@ -74,7 +74,8 @@ const MeetControls:FunctionComponent<MeetControlsProps> = ({handleSnackBar}) => 
 
     const handleScreenShare = async(screen: boolean) => {
         if(localstate.ShareUser?.userkey !== localstate.currentUser?.key && localstate.IsScreenSharing && localstate.ShareUser?.username){
-            let message =  `${localstate.ShareUser?.username} is sharing now` 
+            let message =  `${localstate.ShareUser?.username} is sharing now`;
+            console.log(localstate.ShareUser.username)
             handleSnackBar(true, message);
         }
         else if(screen){

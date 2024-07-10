@@ -71,7 +71,6 @@ const MeetingForm:FunctionComponent<MeetFormType> = ({Type}) => {
                 onChildChanged(userRef, (event) => {        
                     let updateKey = String(event.key);
                     if(updateKey == 'preference' && userRef.key){
-                        console.log("Preference------", updateKey)
                         dispatch(UPDATE_SCREEN_SHARE({userkey: userRef.key, screen: event.val()?.screen}));
                     }
                     dispatch(UPDATE_PARTICIPANT({user: {
@@ -141,6 +140,11 @@ const MeetingForm:FunctionComponent<MeetFormType> = ({Type}) => {
                
                 onChildChanged(userRef, (event) => {
                     let updateKey = String(event.key);
+                    
+                    if(updateKey == 'preference' && userRef.key){
+                        dispatch(UPDATE_SCREEN_SHARE({userkey: userRef.key, screen: event.val()?.screen}));
+                    }
+
                     dispatch(UPDATE_PARTICIPANT({user: {
                         [String(userRef.key)] : {
                             [updateKey]: event.val()

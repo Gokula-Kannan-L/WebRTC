@@ -114,14 +114,7 @@ export const meetingSlice = createSlice({
                     state.peerConnection = payload[participantkey].peerConnection;
                 }
 
-                if(payload[participantkey]?.peerConnection){
-                    const peerConnection:RTCPeerConnection = payload[participantkey]?.peerConnection as RTCPeerConnection;
-                    peerConnection.ontrack = (event: RTCTrackEvent) => {
-                        event.streams[0].getTracks().forEach((track) => {
-                            console.log(track);
-                        });
-                    };
-                }
+                console.log('ADD Participant ---------',payload);
                     
                 state.participants = {...state.participants, ...payload};
                 state.participantsCount++;

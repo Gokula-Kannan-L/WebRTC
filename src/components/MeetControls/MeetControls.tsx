@@ -84,11 +84,10 @@ const MeetControls:FunctionComponent<MeetControlsProps> = ({handleSnackBar}) => 
             handleSnackBar(true, message);
         }
         else if(screen){
-            await getDisplayMedia({video: true}).then( (stream: MediaStream) => {
+            await getDisplayMedia({video: true, audio: false}).then( (stream: MediaStream) => {
                 UpdateRemoteStreams(stream, screen);
 
                 stream.getVideoTracks()[0].onended = async() => {
-                    console.log("Stop Sharing")
                     await getMediaStream({audio: localstate.currentUser?.preference.audio, video: localstate.currentUser?.preference.video}).then( stream => {
                         UpdateRemoteStreams(stream, false);
                     });

@@ -39,7 +39,7 @@ const Meeting = () => {
             :
             <Grid item xs={12} sx={{display: "flex", flexDirection: 'row'}} height={'90%'}>
                 <div style={{width: '100%', padding: '20px', position: 'relative'}}>
-                {localState.IsScreenSharing ? <ScreenTile /> :  <LocalTile />}
+                {(localState.IsScreenSharing && localState.ShareUser?.userkey) ? <ScreenTile /> :  <LocalTile />}
                 </div>
             </Grid>
             }

@@ -113,6 +113,24 @@ export const meetingSlice = createSlice({
                     console.log("NEVER CALL------------------");
                     state.peerConnection = payload[participantkey].peerConnection;
                 }
+                state.participants = {...state.participants, ...payload};
+
+                if(payload[participantkey]?.peerConnection){
+                    
+                    const peerConnection = payload[participantkey]?.peerConnection as RTCPeerConnection;
+                    const remoteStream = new MediaStream();
+                    peerConnection.ontrack = (event: RTCTrackEvent) => {
+                        event.streams[0].getTracks().forEach((track) => {
+                            remoteStream.addTrack(track);
+                        });
+                    };
+
+                    state.participants[participantkey] = {
+                        ...state.participants[participantkey],
+                        remoteStream: remoteStream,
+                        onTrackSet: true
+                    }
+                }
 
                 if(!state.IsScreenSharing && payload[participantkey].preference.screen){
                     state.ShareUser = {
@@ -121,8 +139,9 @@ export const meetingSlice = createSlice({
                     }
                     state.IsScreenSharing = true;
                 }
-                    
-                state.participants = {...state.participants, ...payload};
+                
+                console.log("New User-----------",state.participants[participantkey])
+                
                 state.participantsCount++;
             }
         },

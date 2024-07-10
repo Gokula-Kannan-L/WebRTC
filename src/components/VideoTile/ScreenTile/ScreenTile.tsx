@@ -11,6 +11,7 @@ const ScreenTile:FunctionComponent = () => {
     const [userName, setUsername] = useState<string>('');
 
     useEffect( () => {
+        console.log(localstate.ShareUser)
         if(localstate.IsScreenSharing){
            
             if(localstate.ShareUser?.userkey === localstate.currentUser?.key){
@@ -18,9 +19,8 @@ const ScreenTile:FunctionComponent = () => {
                 setUsername('You are')
             }else{
                 if(localstate.ShareUser?.userkey){
-
-
                     let RemoteUser = localstate.participants[localstate.ShareUser?.userkey];
+                    console.log('Sharer', RemoteUser);
                     if(RemoteUser.remoteStream){
                         setScreenStream(RemoteUser.remoteStream);
                         setUsername(RemoteUser.username + ' is')

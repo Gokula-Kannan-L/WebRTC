@@ -19,16 +19,6 @@ const Meeting = () => {
         setOpen(open);
     }
 
-    useEffect( () => {
-       if(localState.IsScreenSharing && localState.ShareUser?.userkey){
-            console.log(localState.participants[localState.ShareUser?.userkey].remoteStream)
-            const stream = localState.participants[localState.ShareUser?.userkey].remoteStream as MediaStream;
-            console.log(stream.getTracks())
-            
-       }
-
-    },[localState.IsScreenSharing]);
-
     return(
         <Grid height={'100vh'} container display={'flex'} flexDirection={'row'} bgcolor={'#343434'}>
             <Snackbar 

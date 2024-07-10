@@ -62,7 +62,7 @@ const MeetControls:FunctionComponent<MeetControlsProps> = ({handleSnackBar}) => 
                 //     peerConnection.addTrack(track, stream);
                 // })
                 let s = user.remoteStream as MediaStream
-                console.log("Before -------", s.getTracks())
+                console.log("Before -------", s.getTracks());
                 let userConnection = peerConnection.getSenders().find((s) => (s.track ? s.track.kind === "video" : false));
                 if(userConnection)
                     userConnection?.replaceTrack(stream.getVideoTracks()[0]);

@@ -41,7 +41,7 @@ const ScreenTile:FunctionComponent = () => {
     return(
         <>
             <video ref={VideoRef} id="local-videotile" autoPlay playsInline width={'100%'} height={'100%'} style={{objectFit: 'cover', borderRadius: "20px", backgroundColor: 'black'}} controls={false} muted={true}></video>
-            <Typography sx={{fontSize: '16px', color: '#F4C430', background: 'rgba(0, 0, 0, 0.7)', padding: '8px 15px', borderRadius: '20px'}}>{userName} presenting the screen</Typography>
+            <Typography sx={{fontSize: '16px', color: '#F4C430', background: 'rgba(0, 0, 0, 0.7)', padding: '8px 15px', borderRadius: '20px', position: 'absolute', bottom: '25px', left: '25px'}}>{userName} presenting the screen</Typography>
         </>
         
     );

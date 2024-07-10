@@ -33,7 +33,7 @@ const Meeting = () => {
             />
             {localState.participantsCount > 1 ? 
             <Grid item xs={12} sx={{display: "flex", flexDirection: 'row'}} height={'90%'}>
-                <Grid xs={9.5} item padding={"20px"} bgcolor={'#343434'}>
+                <Grid xs={9.5} item padding={"20px"} bgcolor={'#343434'} position={'relative'} >
                     {localState.IsScreenSharing ? <ScreenTile /> :  <LocalTile />}
                 </Grid>
                 <Grid xs={2.5} item borderRadius={'20px'} bgcolor={'#28282B'} margin={'20px 20px 20px 0px'}>
@@ -42,7 +42,7 @@ const Meeting = () => {
             </Grid>
             :
             <Grid item xs={12} sx={{display: "flex", flexDirection: 'row'}} height={'90%'}>
-                <div style={{width: '100%', padding: '20px'}}>
+                <div style={{width: '100%', padding: '20px', position: 'relative'}}>
                 {localState.IsScreenSharing ? <ScreenTile /> :  <LocalTile />}
                 </div>
             </Grid>

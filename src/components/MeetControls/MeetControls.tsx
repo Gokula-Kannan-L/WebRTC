@@ -50,7 +50,7 @@ const MeetControls:FunctionComponent = () => {
         }
     }
 
-    const UpdateRemoteStreams = (stream: MediaStream) => {
+    const UpdateRemoteStreams = (stream: MediaStream, screen: boolean) => {
         Object.keys(participants).forEach( (key) => {
             const user = participants[key];
             const peerConnection: RTCPeerConnection = user?.peerConnection;
@@ -59,32 +59,33 @@ const MeetControls:FunctionComponent = () => {
                 userConnection?.replaceTrack(stream.getVideoTracks()[0]);
                 // userConnection?.setStreams(stream);
             }
-        })
+        });
+        // dispatch(SET_LOCALSTREAM(stream));
+        dispatch(UPDATE_USER({screen}));
     }
 
     const handleScreenShare = async(screen: boolean) => {
         if(screen){
-            await getDisplayMedia({video: true, audio: true}).then( (stream) => {
-                // stream.getVideoTracks()[0].onended = async() => {
-                //     await getMediaStream({audio: localstate.currentUser?.preference.audio, video: localstate.currentUser?.preference.video}).then( stream => {
-                //         UpdateRemoteStreams(stream);
-                //     });
-                // }
-                dispatch(SET_LOCALSTREAM(stream));
-                UpdateRemoteStreams(stream);
+            await getDisplayMedia({video: true}).then( (stream: MediaStream) => {
+                UpdateRemoteStreams(stream, screen);
+
+                stream.getVideoTracks()[0].onended = async() => {
+                    console.log("Stop Sharing")
+                    await getMediaStream({audio: localstate.currentUser?.preference.audio, video: localstate.currentUser?.preference.video}).then( stream => {
+                        UpdateRemoteStreams(stream, false);
+                    });
+                }
             }).catch( error => {
             console.log(error);
            });
         }else{
             await getMediaStream({audio: true, video: true}).then( stream => {
-                dispatch(SET_LOCALSTREAM(stream));
-                UpdateRemoteStreams(stream);
+                UpdateRemoteStreams(stream, screen);
             }).catch( error => {
                 console.log(error);
             });
         }
-        dispatch(UPDATE_USER({screen}));
-        // dispatch(UPDATE_SCREEN_SHARE(screen));
+        
     }
 
     const handleLeave = async() => {

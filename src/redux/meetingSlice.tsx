@@ -154,6 +154,7 @@ export const meetingSlice = createSlice({
 
         UPDATE_SCREEN_SHARE: (state, action: PayloadAction<{userkey:string, screen: boolean}>) => {
             let {payload} = action;
+            console.log("UPDATE_SCREEN_SHARE --------", payload);
             state.IsScreenSharing = payload.screen;
             if(payload.screen){
                 state.ShareUser = {

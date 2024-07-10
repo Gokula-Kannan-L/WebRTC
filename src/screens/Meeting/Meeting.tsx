@@ -13,7 +13,7 @@ const Meeting = () => {
 
     useEffect( () => {
        console.log(localState.IsScreenSharing)
-    },[localState.participants]);
+    },[localState.IsScreenSharing]);
 
     return(
         <Grid height={'100vh'} container display={'flex'} flexDirection={'row'} bgcolor={'#343434'}>

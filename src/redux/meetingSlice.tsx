@@ -114,7 +114,13 @@ export const meetingSlice = createSlice({
                     state.peerConnection = payload[participantkey].peerConnection;
                 }
 
-                console.log('ADD Participant ---------',payload);
+                if(!state.IsScreenSharing && payload[participantkey].preference.screen){
+                    state.ShareUser = {
+                        userkey: participantkey,
+                        username: payload[participantkey].username,
+                    }
+                    state.IsScreenSharing = true;
+                }
                     
                 state.participants = {...state.participants, ...payload};
                 state.participantsCount++;
@@ -145,7 +151,6 @@ export const meetingSlice = createSlice({
 
         ADD_REMOTESTREAM: (state, action: PayloadAction<{key: string, remoteStream: MediaStream}>) => {
             const {payload} = action;
-            console.log(payload.remoteStream);
             if(state.participants[payload.key]){
                 state.participants[payload.key] = {
                     ...state.participants[payload.key],

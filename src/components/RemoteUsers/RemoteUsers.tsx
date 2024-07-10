@@ -14,7 +14,7 @@ const RemoteUsers: FunctionComponent = () => {
         Object.keys(participants).forEach( (key) => {
             const user = participants[key];
             const peerConnection: RTCPeerConnection = user?.peerConnection;
-           
+           console.log("perrconnection------------------------", peerConnection)
             if(peerConnection && !user?.onTrackSet){
                 const remoteStream = new MediaStream();
                 peerConnection.ontrack = (event: RTCTrackEvent) => {

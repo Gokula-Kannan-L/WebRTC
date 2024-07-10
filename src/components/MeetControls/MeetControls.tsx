@@ -58,13 +58,16 @@ const MeetControls:FunctionComponent<MeetControlsProps> = ({handleSnackBar}) => 
             const user = participants[key];
             const peerConnection: RTCPeerConnection = user?.peerConnection;
             if(peerConnection){
-                let userConnection = peerConnection.getSenders().find((s) => (s.track ? s.track.kind === "video" : false));
-                if(userConnection)
-                    userConnection?.replaceTrack(stream.getVideoTracks()[0]);
-                else
-                    stream.getVideoTracks().forEach( track => {
-                        peerConnection.addTrack(track, stream);
-                    })
+                stream.getVideoTracks().forEach( track => {
+                    peerConnection.addTrack(track, stream);
+                })
+                // let userConnection = peerConnection.getSenders().find((s) => (s.track ? s.track.kind === "video" : false));
+                // if(userConnection)
+                //     userConnection?.replaceTrack(stream.getVideoTracks()[0]);
+                // else
+                //     stream.getVideoTracks().forEach( track => {
+                //         peerConnection.addTrack(track, stream);
+                //     })
                 // userConnection?.setStreams(stream);
             }
         });

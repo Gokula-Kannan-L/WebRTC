@@ -13,7 +13,10 @@ import { Button } from "@mui/material";
 import { leaveMeeting } from "../../server/peerconnection";
 import { getDisplayMedia, getMediaStream } from "../../helpers/helper";
 
-const MeetControls:FunctionComponent = () => {
+type MeetControlsProps = {
+    handleSnackBar: (open: boolean, message: string) => void
+}
+const MeetControls:FunctionComponent<MeetControlsProps> = ({handleSnackBar}) => {
     const dispatch = useDispatch();
 
     const localstate = useSelector( (state: RootState) => state.meeting);
@@ -56,7 +59,12 @@ const MeetControls:FunctionComponent = () => {
             const peerConnection: RTCPeerConnection = user?.peerConnection;
             if(peerConnection){
                 let userConnection = peerConnection.getSenders().find((s) => (s.track ? s.track.kind === "video" : false));
-                userConnection?.replaceTrack(stream.getVideoTracks()[0]);
+                if(userConnection)
+                    userConnection?.replaceTrack(stream.getVideoTracks()[0]);
+                else
+                    stream.getVideoTracks().forEach( track => {
+                        peerConnection.addTrack(track, stream);
+                    })
                 // userConnection?.setStreams(stream);
             }
         });
@@ -65,7 +73,11 @@ const MeetControls:FunctionComponent = () => {
     }
 
     const handleScreenShare = async(screen: boolean) => {
-        if(screen){
+        if(localstate.ShareUser?.userkey !== localstate.currentUser?.key && localstate.IsScreenSharing && localstate.ShareUser?.username){
+            let message =  `${localstate.ShareUser?.username} is sharing now` 
+            handleSnackBar(true, message);
+        }
+        else if(screen){
             await getDisplayMedia({video: true}).then( (stream: MediaStream) => {
                 UpdateRemoteStreams(stream, screen);
 
@@ -85,6 +97,7 @@ const MeetControls:FunctionComponent = () => {
                 console.log(error);
             });
         }
+        
         
     }
 

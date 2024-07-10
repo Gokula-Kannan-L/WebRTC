@@ -20,7 +20,13 @@ const Meeting = () => {
     }
 
     useEffect( () => {
-       console.log(localState.IsScreenSharing)
+       if(localState.IsScreenSharing && localState.ShareUser?.userkey){
+            console.log(localState.participants[localState.ShareUser?.userkey].remoteStream)
+            const stream = localState.participants[localState.ShareUser?.userkey].remoteStream as MediaStream;
+            console.log(stream.getTracks())
+            
+       }
+
     },[localState.IsScreenSharing]);
 
     return(

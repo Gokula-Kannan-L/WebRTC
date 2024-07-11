@@ -22,6 +22,7 @@ export const InitializeMeeting = (stream: MediaStream, user: UserType) => {
 
     dbRef = push(dbRef);
     const participantRef = child(dbRef, 'participants');
+    const contentshareRef = child(dbRef, 'contentshare');
     let key:string = ''; 
     onValue(connectedRef, (snapshot) => {
 
@@ -42,13 +43,14 @@ export const InitializeMeeting = (stream: MediaStream, user: UserType) => {
 
     let meetingId = dbRef.key;
 
-    return {participantRef, key, meetingId};
+    return {participantRef, contentshareRef, key, meetingId};
 }
 
 export const JoinMeeting = (meetingId: string, user: UserType) => {
 
     dbRef = child(dbRef, meetingId);
     const participantRef = child(dbRef, 'participants');
+    const contentshareRef = child(dbRef, 'contentshare');
     let key:string = ''; 
     onValue(connectedRef, (snapshot) => {
 
@@ -67,7 +69,7 @@ export const JoinMeeting = (meetingId: string, user: UserType) => {
         }
     });
 
-    return {participantRef, key};
+    return {participantRef, contentshareRef ,key};
 }
 
 export const getParticipantRef = () => {

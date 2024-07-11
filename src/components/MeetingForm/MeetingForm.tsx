@@ -1,12 +1,13 @@
 import React, { FunctionComponent, useEffect, useRef, useState } from "react";
 import { Button, Container, Grid, TextField, Typography } from "@mui/material";
 import { getMediaStream, getRandomColor } from "../../helpers/helper";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { UserType, SET_USER, SET_LOCALSTREAM, ADD_PARTICIPANTS, ParticipantType, REMOVE_PARTICIPANT, SET_MEET_ID, UPDATE_PARTICIPANT, RESET, UPDATE_SCREEN_SHARE } from "../../redux/meetingSlice";
 import { useNavigate } from "react-router-dom";
 import { InitializeMeeting, JoinMeeting, getChildRef } from "../../server/firebase";
 import { v4 as uuidv4 } from 'uuid';
 import { DatabaseReference, onChildAdded, onChildChanged, onChildRemoved } from "firebase/database";
+import { RootState } from "../../redux/store";
 
 export enum FormType{
     CREATE = 1,
@@ -25,6 +26,8 @@ const MeetingForm:FunctionComponent<MeetFormType> = ({Type}) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
+    const ShareUser = useSelector((state: RootState) => state.meeting.ShareUser);
+    const IsScreenSharing = useSelector((state: RootState) => state.meeting.IsScreenSharing)
     const getStream = async() => {
         try{
             const stream = await getMediaStream({audio: true, video: true});
@@ -36,8 +39,6 @@ const MeetingForm:FunctionComponent<MeetFormType> = ({Type}) => {
            console.log('Error', error);
 
         }
-       
-        
     }
 
 
@@ -70,9 +71,11 @@ const MeetingForm:FunctionComponent<MeetFormType> = ({Type}) => {
                
                 onChildChanged(userRef, (event) => {        
                     let updateKey = String(event.key);
-                    if(updateKey == 'preference' && userRef.key && event.val()?.screen){
+                
+                    if(updateKey == 'preference' && userRef.key){
                         dispatch(UPDATE_SCREEN_SHARE({userkey: userRef.key, screen: event.val()?.screen}));
                     }
+
                     dispatch(UPDATE_PARTICIPANT({user: {
                         [String(userRef.key)] : {
                             [updateKey]: event.val()
@@ -140,9 +143,11 @@ const MeetingForm:FunctionComponent<MeetFormType> = ({Type}) => {
                
                 onChildChanged(userRef, (event) => {
                     let updateKey = String(event.key);
-                    if(updateKey == 'preference' && userRef.key && event.val()?.screen){
+                    
+                    if(updateKey == 'preference' && userRef.key){
                         dispatch(UPDATE_SCREEN_SHARE({userkey: userRef.key, screen: event.val()?.screen}));
                     }
+                    
                     dispatch(UPDATE_PARTICIPANT({user: {
                         [String(userRef.key)] : {
                             [updateKey]: event.val()

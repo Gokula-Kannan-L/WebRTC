@@ -7,7 +7,7 @@ import CallEndIcon from '@mui/icons-material/CallEnd';
 import PresentToAllIcon from '@mui/icons-material/PresentToAll';
 import CancelPresentationIcon from '@mui/icons-material/CancelPresentation';
 import { useDispatch, useSelector } from "react-redux";
-import { RESET, SET_LOCALSTREAM, UPDATE_SCREEN_SHARE, UPDATE_USER } from "../../redux/meetingSlice";
+import { RESET, SET_LOCALSTREAM, UPDATE_USER } from "../../redux/meetingSlice";
 import { RootState } from "../../redux/store";
 import { Button } from "@mui/material";
 import { leaveMeeting } from "../../server/peerconnection";
@@ -58,11 +58,6 @@ const MeetControls:FunctionComponent<MeetControlsProps> = ({handleSnackBar}) => 
             const user = participants[key];
             const peerConnection: RTCPeerConnection = user?.peerConnection;
             if(peerConnection){
-                // stream.getVideoTracks().forEach( track => {
-                //     peerConnection.addTrack(track, stream);
-                // })
-                let s = user.remoteStream as MediaStream
-                console.log("Before -------", s.getTracks());
                 let userConnection = peerConnection.getSenders().find((s) => (s.track ? s.track.kind === "video" : false));
                 if(userConnection)
                     userConnection?.replaceTrack(stream.getVideoTracks()[0]);
@@ -70,7 +65,6 @@ const MeetControls:FunctionComponent<MeetControlsProps> = ({handleSnackBar}) => 
                     stream.getVideoTracks().forEach( track => {
                         peerConnection.addTrack(track, stream);
                     })
-               
             }
         });
         // dispatch(SET_LOCALSTREAM(stream));
@@ -80,12 +74,14 @@ const MeetControls:FunctionComponent<MeetControlsProps> = ({handleSnackBar}) => 
     const handleScreenShare = async(screen: boolean) => {
         if(localstate.ShareUser?.userkey !== localstate.currentUser?.key && localstate.IsScreenSharing && localstate.ShareUser?.username){
             let message =  `${localstate.ShareUser?.username} is sharing now`;
-            console.log(localstate.ShareUser.username)
             handleSnackBar(true, message);
+            setTimeout( () => {
+                handleSnackBar(false, message);
+            }, 5000)
         }
         else if(screen){
             await getDisplayMedia({video: true, audio: false}).then( (stream: MediaStream) => {
-                UpdateRemoteStreams(stream, screen);
+                UpdateRemoteStreams(stream, true);
 
                 stream.getVideoTracks()[0].onended = async() => {
                     await getMediaStream({audio: localstate.currentUser?.preference.audio, video: localstate.currentUser?.preference.video}).then( stream => {
@@ -97,7 +93,7 @@ const MeetControls:FunctionComponent<MeetControlsProps> = ({handleSnackBar}) => 
            });
         }else{
             await getMediaStream({audio: true, video: true}).then( stream => {
-                UpdateRemoteStreams(stream, screen);
+                UpdateRemoteStreams(stream, false);
             }).catch( error => {
                 console.log(error);
             });

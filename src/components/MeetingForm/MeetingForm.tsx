@@ -2,9 +2,9 @@ import React, { FunctionComponent, useEffect, useRef, useState } from "react";
 import { Button, Container, Grid, TextField, Typography } from "@mui/material";
 import { getMediaStream, getRandomColor } from "../../helpers/helper";
 import { useDispatch, useSelector } from "react-redux";
-import { UserType, SET_USER, SET_LOCALSTREAM, ADD_PARTICIPANTS, ParticipantType, REMOVE_PARTICIPANT, SET_MEET_ID, UPDATE_PARTICIPANT, RESET, UPDATE_SCREEN_SHARE } from "../../redux/meetingSlice";
+import { UserType, SET_USER, SET_LOCALSTREAM, ADD_PARTICIPANTS, ParticipantType, REMOVE_PARTICIPANT, SET_MEET_ID, UPDATE_PARTICIPANT, RESET, UPDATE_SCREEN_SHARE, SET_HOST, HostType } from "../../redux/meetingSlice";
 import { useNavigate } from "react-router-dom";
-import { InitializeMeeting, JoinMeeting, getChildRef } from "../../server/firebase";
+import { InitializeMeeting, JoinMeeting, getChildRef, getMeetingInfo } from "../../server/firebase";
 import { v4 as uuidv4 } from 'uuid';
 import { DatabaseReference, onChildAdded, onChildChanged, onChildRemoved } from "firebase/database";
 import { RootState } from "../../redux/store";
@@ -26,8 +26,6 @@ const MeetingForm:FunctionComponent<MeetFormType> = ({Type}) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const ShareUser = useSelector((state: RootState) => state.meeting.ShareUser);
-    const IsScreenSharing = useSelector((state: RootState) => state.meeting.IsScreenSharing)
     const getStream = async() => {
         try{
             const stream = await getMediaStream({audio: true, video: true});
@@ -42,7 +40,7 @@ const MeetingForm:FunctionComponent<MeetFormType> = ({Type}) => {
     }
 
 
-    const handleCreateMeeting = () => {
+    const handleCreateMeeting = async() => {
         dispatch(RESET());
        
         let payload: UserType = {
@@ -58,12 +56,21 @@ const MeetingForm:FunctionComponent<MeetFormType> = ({Type}) => {
 
         if(localstream){
             
-            const {participantRef, key, meetingId} = InitializeMeeting(localstream, payload);
+            const {participantRef, key, meetingId, infoKey} = await InitializeMeeting(localstream, payload);
             payload.key = key;
             dispatch(SET_MEET_ID(String(meetingId)));
             dispatch(SET_LOCALSTREAM(localstream));
             dispatch(SET_USER(payload));
 
+            const MeetingInfo = await getMeetingInfo(String(infoKey));
+            let host:HostType = {
+                hostId: MeetingInfo.hostId,
+                hostName: MeetingInfo.hostName,
+                hostUserKey: MeetingInfo.hostUserKey,
+                createdAt: MeetingInfo.createdAt
+            }
+            dispatch(SET_HOST({host}));
+           
             onChildAdded(participantRef, (snapshot) => {
                 let key: string = String(snapshot.key);
              
@@ -181,8 +188,22 @@ const MeetingForm:FunctionComponent<MeetFormType> = ({Type}) => {
         }
     }
 
+    const handleDeviceChange = async() => {
+        await getStream();
+        console.log("deviceChange ---------------");
+        if(localstream){
+            dispatch(SET_LOCALSTREAM(localstream));
+        }
+    }
+
     useEffect( () => {
-        getStream(); 
+        getStream();
+
+        navigator.mediaDevices.addEventListener('devicechange', handleDeviceChange);
+        return () => {
+            navigator.mediaDevices.removeEventListener('devicechange', handleDeviceChange);
+        }
+
     }, []);
 
     return(

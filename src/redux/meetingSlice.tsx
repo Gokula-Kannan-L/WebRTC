@@ -1,5 +1,6 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { InitializeListeners, createconnection, updateUserPreference } from "../server/peerconnection";
+import { getMeetingInfo } from "../server/firebase";
 
 export type UserType =  {
     username: string,
@@ -45,9 +46,15 @@ export type UpdateParticipant = {
         }
     }
 }
-
+export type HostType = {
+    hostName: string
+    hostId: string
+    hostUserKey: string
+    createdAt: string
+}
 export interface MeetingState {
     meetingId: string,
+    hostInfo:  HostType | null,
     currentUser: UserType | null
     localStream: MediaStream | null
     peerConnection?: RTCPeerConnection //Current User
@@ -62,6 +69,7 @@ export interface MeetingState {
 
 const initialState: MeetingState  =  {
     meetingId: '',
+    hostInfo: null,
     currentUser: null,
     localStream: null,
     participants: {},
@@ -76,6 +84,11 @@ export const meetingSlice = createSlice({
         SET_MEET_ID: (state, action: PayloadAction<string>) => {
             let {payload} = action;
             state.meetingId = payload;
+        },
+
+        SET_HOST: (state, action: PayloadAction<{host: HostType}>) => {
+            let {payload} = action;
+            state.hostInfo = payload.host;
         },
 
         SET_USER: (state, action: PayloadAction<UserType>) => {
@@ -139,8 +152,6 @@ export const meetingSlice = createSlice({
                     }
                     state.IsScreenSharing = true;
                 }
-                
-                console.log("New User-----------",state.participants[participantkey])
                 
                 state.participantsCount++;
             }
@@ -206,6 +217,6 @@ export const meetingSlice = createSlice({
     }
 });
 
-export const {SET_MEET_ID, SET_USER, UPDATE_USER, SET_LOCALSTREAM, ADD_PARTICIPANTS, UPDATE_PARTICIPANT, REMOVE_PARTICIPANT, ADD_REMOTESTREAM, UPDATE_SCREEN_SHARE, RESET} = meetingSlice.actions;
+export const {SET_MEET_ID, SET_HOST, SET_USER, UPDATE_USER, SET_LOCALSTREAM, ADD_PARTICIPANTS, UPDATE_PARTICIPANT, REMOVE_PARTICIPANT, ADD_REMOTESTREAM, UPDATE_SCREEN_SHARE, RESET} = meetingSlice.actions;
 
 export default meetingSlice.reducer;

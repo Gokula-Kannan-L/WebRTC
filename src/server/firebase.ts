@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import {DataSnapshot, DatabaseReference, Query, child, getDatabase, onChildAdded, onChildRemoved, onDisconnect, onValue, push, ref, set, update} from 'firebase/database';
+import {DataSnapshot, DatabaseReference, Query, child, getDatabase, onChildAdded, get, onDisconnect, onValue, push, ref, set, update} from 'firebase/database';
 import {  UserType } from "../redux/meetingSlice";
 
 
@@ -21,6 +21,8 @@ let connectedRef = ref(getDatabase(app), ".info/connected");
 export const InitializeMeeting = (stream: MediaStream, user: UserType) => {
 
     dbRef = push(dbRef);
+    const MeetingInfoRef = child(dbRef, 'MeetingInfo'); //Meeting Info Node
+    console.log(MeetingInfoRef)
     const participantRef = child(dbRef, 'participants');
     const contentshareRef = child(dbRef, 'contentshare');
     let key:string = ''; 
@@ -41,9 +43,15 @@ export const InitializeMeeting = (stream: MediaStream, user: UserType) => {
         }
     });
 
-    let meetingId = dbRef.key;
+    const InfoRef =  push(MeetingInfoRef, {
+        hostName: user.username,
+        hostId: user.userid,
+        hostUserKey: key,
+        createdAt: String(new Date())
+    });
+    onDisconnect(InfoRef).remove();
 
-    return {participantRef, contentshareRef, key, meetingId};
+    return {participantRef, contentshareRef, key, meetingId: dbRef.key, infoKey: InfoRef.key};
 }
 
 export const JoinMeeting = (meetingId: string, user: UserType) => {
@@ -70,6 +78,25 @@ export const JoinMeeting = (meetingId: string, user: UserType) => {
     });
 
     return {participantRef, contentshareRef ,key};
+}
+
+export const getMeetingInfo = async(infoKey: string) => {
+
+    const MeetingInfoRef = child(dbRef, 'MeetingInfo');
+    let meetInfo = {
+        createdAt: '',
+        hostId: '',
+        hostName: '',
+        hostUserKey: ''
+    }
+    await get(child(MeetingInfoRef, infoKey)).then( async (snapshot) => {
+        snapshot.val();
+        if(snapshot.exists()){
+            meetInfo = snapshot.val();
+        }
+    });
+
+    return meetInfo;
 }
 
 export const getParticipantRef = () => {

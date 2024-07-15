@@ -7,6 +7,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
 import ScreenTile from '../../components/VideoTile/ScreenTile/ScreenTile';
 import Snackbar from '@mui/material/Snackbar';
+import MeetTimer from '../../components/MeetTimer/MeetTimer';
 
 const Meeting = () => {
   
@@ -16,7 +17,7 @@ const Meeting = () => {
 
     const handleSnackBar = (open: boolean, message: string) => {
         setMessage(message);
-        setOpen(open);
+        setOpen(open);  
     }
 
     return(
@@ -30,6 +31,7 @@ const Meeting = () => {
             {localState.participantsCount > 1 ? 
             <Grid item xs={12} sx={{display: "flex", flexDirection: 'row'}} height={'90%'}>
                 <Grid xs={9.5} item padding={"20px"} bgcolor={'#343434'} position={'relative'} >
+                    {/* <MeetTimer /> */}
                     {localState.IsScreenSharing ? <ScreenTile /> :  <LocalTile />}
                 </Grid>
                 <Grid xs={2.5} item borderRadius={'20px'} bgcolor={'#28282B'} margin={'20px 20px 20px 0px'}>
@@ -39,7 +41,8 @@ const Meeting = () => {
             :
             <Grid item xs={12} sx={{display: "flex", flexDirection: 'row'}} height={'90%'}>
                 <div style={{width: '100%', padding: '20px', position: 'relative'}}>
-                {(localState.IsScreenSharing && localState.ShareUser?.userkey) ? <ScreenTile /> :  <LocalTile />}
+                    {/* <MeetTimer /> */}
+                    {(localState.IsScreenSharing && localState.ShareUser?.userkey) ? <ScreenTile /> :  <LocalTile />}
                 </div>
             </Grid>
             }

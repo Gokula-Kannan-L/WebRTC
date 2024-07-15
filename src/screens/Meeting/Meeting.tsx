@@ -23,10 +23,6 @@ const Meeting = () => {
         setOpen(open);  
     }
 
-    useEffect( () => {
-        console.log("Particpant---------------------",localState.participants)
-    }, [localState.participants])
-
     const handleDeviceChange = async(participants: any) => {
         const stream = await getMediaStream({audio: true, video: true});
         console.log("device Chnaged000000" , stream);

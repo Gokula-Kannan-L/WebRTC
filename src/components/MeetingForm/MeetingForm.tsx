@@ -1,12 +1,12 @@
 import React, { FunctionComponent, useEffect, useRef, useState } from "react";
-import { Button, Container, Grid, TextField, Typography } from "@mui/material";
+import { Button, Grid, TextField, Typography } from "@mui/material";
 import { getMediaStream, getRandomColor } from "../../helpers/helper";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { UserType, SET_USER, SET_LOCALSTREAM, ADD_PARTICIPANTS, ParticipantType, REMOVE_PARTICIPANT, SET_MEET_ID, UPDATE_PARTICIPANT, RESET, UPDATE_SCREEN_SHARE, SET_HOST, HostType } from "../../redux/meetingSlice";
 import { useNavigate } from "react-router-dom";
 import { InitializeMeeting, JoinMeeting, getChildRef, getMeetingInfo } from "../../server/firebase";
 import { v4 as uuidv4 } from 'uuid';
-import { DatabaseReference, onChildAdded, onChildChanged, onChildRemoved } from "firebase/database";
+import {  onChildAdded, onChildChanged, onChildRemoved } from "firebase/database";
 
 export enum FormType{
     CREATE = 1,
@@ -55,20 +55,15 @@ const MeetingForm:FunctionComponent<MeetFormType> = ({Type}) => {
 
         if(localstream){
             
-            const {participantRef, key, meetingId, infoKey} = await InitializeMeeting(localstream, payload);
+            const {participantRef, key, meetingId} = await InitializeMeeting(localstream, payload);
             payload.key = key;
             dispatch(SET_MEET_ID(String(meetingId)));
             dispatch(SET_LOCALSTREAM(localstream));
             dispatch(SET_USER(payload));
 
-            const MeetingInfo = await getMeetingInfo(String(infoKey));
-            let host:HostType = {
-                hostId: MeetingInfo.hostId,
-                hostName: MeetingInfo.hostName,
-                hostUserKey: MeetingInfo.hostUserKey,
-                createdAt: MeetingInfo.createdAt
-            }
-            dispatch(SET_HOST({host}));
+            await getMeetingInfo().then( (host) => {
+                dispatch(SET_HOST({host}));
+            });
            
             onChildAdded(participantRef, (snapshot) => {
                 let key: string = String(snapshot.key);
@@ -117,7 +112,7 @@ const MeetingForm:FunctionComponent<MeetFormType> = ({Type}) => {
         }
     }
 
-    const handleJoinMeeting = () => {
+    const handleJoinMeeting = async() => {
         dispatch(RESET());
 
         let payload: UserType = {
@@ -141,6 +136,9 @@ const MeetingForm:FunctionComponent<MeetFormType> = ({Type}) => {
 
             payload.key = key;
             dispatch(SET_USER(payload));
+            await getMeetingInfo().then( (host) => {
+                dispatch(SET_HOST({host}));
+            });
 
             onChildAdded(participantRef, (snapshot) => {
                 
@@ -189,7 +187,6 @@ const MeetingForm:FunctionComponent<MeetFormType> = ({Type}) => {
 
     const handleDeviceChange = async() => {
         await getStream();
-        console.log("deviceChange ---------------222");
         if(localstream){
             dispatch(SET_LOCALSTREAM(localstream));
         }
@@ -220,7 +217,7 @@ const MeetingForm:FunctionComponent<MeetFormType> = ({Type}) => {
             </Grid>
             <Grid item xs={7} sx={{display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
                 <Typography variant="h5"> Preview</Typography>
-                <video ref={videoRef} style={{ width: '80%', height: '60%', backgroundColor: 'black', borderRadius: '1rem', objectFit: 'cover'}} autoPlay playsInline controls={false} muted={true}></video>
+                <video ref={videoRef} style={{ width: '80%', height: '60%', backgroundColor: 'black', borderRadius: '1rem', objectFit: 'cover', transform: "rotateY(180deg)"}} autoPlay playsInline controls={false} muted={true}></video>
             </Grid>
         </Grid>
     )

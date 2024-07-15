@@ -16,8 +16,9 @@ export type RemoteUserType = {
         remoteStream: MediaStream;
     }
     index: number
+    IsHost: boolean
 }
-const RemoteTile:FunctionComponent<RemoteUserType> = ({remoteUser, index}) => {
+const RemoteTile:FunctionComponent<RemoteUserType> = ({remoteUser, index, IsHost}) => {
    
     const VideoRef = useRef<any>(null);
     const AudioRef = useRef<any>(null);
@@ -28,7 +29,6 @@ const RemoteTile:FunctionComponent<RemoteUserType> = ({remoteUser, index}) => {
         if(AudioRef.current){
             AudioRef.current.srcObject = remoteUser.remoteStream;
         }
-        console.log(remoteUser.remoteStream.getVideoTracks());
     },[remoteUser]);
 
     return(
@@ -41,7 +41,7 @@ const RemoteTile:FunctionComponent<RemoteUserType> = ({remoteUser, index}) => {
                 }
                 <video className={`remote-user-${index}`} ref={VideoRef} autoPlay playsInline  width={'100%'} height={'200px'} style={{objectFit: 'cover', borderRadius: "20px", backgroundColor: 'black', transform: "rotateY(180deg)"}} controls={false} muted={true} ></video>
                 <audio ref={AudioRef} autoPlay style={{display: 'none'}}></audio>
-                <h5 style={{position: 'absolute', bottom: 0, left: "25px",   color:'whitesmoke'}}>{remoteUser.username}</h5>
+                <h5 style={{position: 'absolute', bottom: 0, left: "25px",   color:'whitesmoke'}}>{remoteUser.username} {IsHost && "(Host)"}</h5>
             </>
             :
             <div style={{width: '100%', height: '200px', position: 'relative' ,display: 'flex', justifyContent: 'center', alignItems: 'center', borderRadius: "20px", backgroundColor: 'black'}}>

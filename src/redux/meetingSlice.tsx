@@ -206,8 +206,6 @@ export const meetingSlice = createSlice({
                 }
             }
 
-            console.log("Updated-------", state.ShareUser);
-
         },
 
         RESET: (state) => {

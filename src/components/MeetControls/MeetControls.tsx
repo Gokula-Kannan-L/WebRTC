@@ -67,7 +67,6 @@ const MeetControls:FunctionComponent<MeetControlsProps> = ({handleSnackBar}) => 
                     })
             }
         });
-        // dispatch(SET_LOCALSTREAM(stream));
         dispatch(UPDATE_USER({screen}));
     }
 

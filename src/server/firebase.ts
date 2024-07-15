@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
 import {DataSnapshot, DatabaseReference, Query, child, getDatabase, onChildAdded, get, onDisconnect, onValue, push, ref, set, update} from 'firebase/database';
-import {  UserType } from "../redux/meetingSlice";
+import {  HostType, UserType } from "../redux/meetingSlice";
 
 
 const firebaseConfig = {
@@ -41,7 +41,6 @@ export const InitializeMeeting = (stream: MediaStream, user: UserType) => {
             onDisconnect(userRef).remove();
         }
     });
-
     const InfoRef =  push(MeetingInfoRef, {
         hostName: user.username,
         hostId: user.userid,
@@ -59,6 +58,7 @@ export const JoinMeeting = (meetingId: string, user: UserType) => {
     const participantRef = child(dbRef, 'participants');
     const contentshareRef = child(dbRef, 'contentshare');
     let key:string = ''; 
+
     onValue(connectedRef, (snapshot) => {
 
         if(snapshot.val()){
@@ -79,23 +79,28 @@ export const JoinMeeting = (meetingId: string, user: UserType) => {
     return {participantRef, contentshareRef ,key};
 }
 
-export const getMeetingInfo = async(infoKey: string) => {
+export const getMeetingInfo = async() => {
 
-    const MeetingInfoRef = child(dbRef, 'MeetingInfo');
-    let meetInfo = {
-        createdAt: '',
+    let host:HostType = {
         hostId: '',
         hostName: '',
-        hostUserKey: ''
+        hostUserKey: '',
+        createdAt: ''
     }
-    await get(child(MeetingInfoRef, infoKey)).then( async (snapshot) => {
-        snapshot.val();
-        if(snapshot.exists()){
-            meetInfo = snapshot.val();
+
+    const MeetingInfoRef = child(dbRef, 'MeetingInfo'); //Meeting Info Node
+    await get(MeetingInfoRef).then( (snapshot) => {
+        let key = Object.keys(snapshot.exportVal())[0];
+        const hostInfo: HostType = snapshot.exportVal()[key];
+        host = {
+            hostId: hostInfo.hostId,
+            hostName: hostInfo.hostName,
+            hostUserKey: hostInfo.hostUserKey,
+            createdAt: hostInfo.createdAt
         }
     });
 
-    return meetInfo;
+    return host;
 }
 
 export const getParticipantRef = () => {

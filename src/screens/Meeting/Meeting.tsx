@@ -23,12 +23,20 @@ const Meeting = () => {
         setOpen(open);  
     }
 
-    const handleDeviceChange = async() => {
-        console.log("device Chnaged000000")
+    useEffect( () => {
+        console.log("Particpant---------------------",localState.participants)
+    }, [localState.participants])
+
+    const handleDeviceChange = async(participants: any) => {
         const stream = await getMediaStream({audio: true, video: true});
+        console.log("device Chnaged000000" , stream);
+        console.log(participants)
         if(stream){
-            Object.keys(localState.participants).forEach(userKey => {
-                const peerConnection:RTCPeerConnection = localState.participants[userKey].peerConnection;
+
+            Object.keys(participants).forEach(userKey => {
+                const peerConnection:RTCPeerConnection = participants[userKey].peerConnection;
+                console.log("user-------------",userKey, participants[userKey])
+                console.log("peerConnection ---------------", peerConnection);
                 if(peerConnection){
                     const senders = peerConnection.getSenders();
 
@@ -36,6 +44,7 @@ const Meeting = () => {
                     const videoTrack = stream.getVideoTracks()[0];
 
                     senders.forEach(sender => {
+                        console.log("Sender--------------", sender);
                         if (sender.track?.kind === 'audio' && audioTrack) {
                             sender.replaceTrack(audioTrack);
                         } else if (sender.track?.kind === 'video' && videoTrack) {
@@ -51,7 +60,9 @@ const Meeting = () => {
     }
 
     useEffect( () => {
-        navigator.mediaDevices.addEventListener('devicechange', handleDeviceChange);
+        navigator.mediaDevices.addEventListener('devicechange', () => {
+            console.log(localState.participants);
+        });
         return () => {
             navigator.mediaDevices.removeEventListener('devicechange', handleDeviceChange);
         }

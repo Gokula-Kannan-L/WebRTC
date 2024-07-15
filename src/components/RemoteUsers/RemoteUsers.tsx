@@ -7,27 +7,24 @@ import { ADD_REMOTESTREAM, ParticipantType } from '../../redux/meetingSlice';
 const RemoteUsers: FunctionComponent = () => {
 
     const participants = useSelector( (state: RootState) => state.meeting.participants);
-    const dispatch = useDispatch();
-
-    // useEffect( () => {
-
-    //     Object.keys(participants).forEach( (key) => {
-    //         const user = participants[key];
-    //         const peerConnection: RTCPeerConnection = user?.peerConnection;
-          
-    //         if(peerConnection && !user?.onTrackSet){
-    //             const remoteStream = new MediaStream();
-    //             peerConnection.ontrack = (event: RTCTrackEvent) => {
-    //                 event.streams[0].getTracks().forEach((track) => {
-    //                     remoteStream.addTrack(track);
-    //                 });
-    //             };
-
-    //             dispatch(ADD_REMOTESTREAM({ key, remoteStream}));
-    //         }   
-    //     });
-
-    // }, [participants])
+   
+    useEffect( () => {
+        Object.keys(participants).forEach( (userKey) => {
+            let user = participants[userKey];
+            if(user?.peerConnection){
+                const peerConnection = user.peerConnection as RTCPeerConnection;
+                peerConnection.getSenders().forEach( sender => {
+                    let parameters = sender.getParameters();
+                    console.log("Parameters--------------------",parameters);
+                    if (!parameters.encodings) {
+                        parameters.encodings = [{}];
+                    }
+                    parameters.encodings[0].maxBitrate = 6000000; // Adjust bitrate as needed
+                    sender.setParameters(parameters);
+                });
+            }
+        })
+    }, [participants])
 
     return(
         <div className='remote-container' style={{overflowY: "auto", height: '100%'}}>

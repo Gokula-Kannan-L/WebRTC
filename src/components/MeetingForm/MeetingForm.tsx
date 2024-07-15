@@ -7,7 +7,6 @@ import { useNavigate } from "react-router-dom";
 import { InitializeMeeting, JoinMeeting, getChildRef, getMeetingInfo } from "../../server/firebase";
 import { v4 as uuidv4 } from 'uuid';
 import { DatabaseReference, onChildAdded, onChildChanged, onChildRemoved } from "firebase/database";
-import { RootState } from "../../redux/store";
 
 export enum FormType{
     CREATE = 1,
@@ -190,7 +189,7 @@ const MeetingForm:FunctionComponent<MeetFormType> = ({Type}) => {
 
     const handleDeviceChange = async() => {
         await getStream();
-        console.log("deviceChange ---------------");
+        console.log("deviceChange ---------------222");
         if(localstream){
             dispatch(SET_LOCALSTREAM(localstream));
         }

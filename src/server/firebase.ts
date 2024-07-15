@@ -22,7 +22,6 @@ export const InitializeMeeting = (stream: MediaStream, user: UserType) => {
 
     dbRef = push(dbRef);
     const MeetingInfoRef = child(dbRef, 'MeetingInfo'); //Meeting Info Node
-    console.log(MeetingInfoRef)
     const participantRef = child(dbRef, 'participants');
     const contentshareRef = child(dbRef, 'contentshare');
     let key:string = ''; 

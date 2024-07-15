@@ -3,22 +3,59 @@ import { Grid } from '@mui/material';
 import LocalTile from '../../components/VideoTile/LocalTile/LocalTile';
 import MeetControls from '../../components/MeetControls/MeetControls';
 import RemoteUsers from '../../components/RemoteUsers/RemoteUsers';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
 import ScreenTile from '../../components/VideoTile/ScreenTile/ScreenTile';
 import Snackbar from '@mui/material/Snackbar';
 import MeetTimer from '../../components/MeetTimer/MeetTimer';
+import { getMediaStream } from '../../helpers/helper';
+import { SET_LOCALSTREAM } from '../../redux/meetingSlice';
 
 const Meeting = () => {
   
     const localState = useSelector((state: RootState) => state.meeting);
     const [open, setOpen] = useState<boolean>(false);
     const [message, setMessage] = useState<string>('');
+    const dispatch = useDispatch();
 
     const handleSnackBar = (open: boolean, message: string) => {
         setMessage(message);
         setOpen(open);  
     }
+
+    const handleDeviceChange = async() => {
+        console.log("device Chnaged000000")
+        const stream = await getMediaStream({audio: true, video: true});
+        if(stream){
+            Object.keys(localState.participants).forEach(userKey => {
+                const peerConnection:RTCPeerConnection = localState.participants[userKey].peerConnection;
+                if(peerConnection){
+                    const senders = peerConnection.getSenders();
+
+                    const audioTrack = stream.getAudioTracks()[0];
+                    const videoTrack = stream.getVideoTracks()[0];
+
+                    senders.forEach(sender => {
+                        if (sender.track?.kind === 'audio' && audioTrack) {
+                            sender.replaceTrack(audioTrack);
+                        } else if (sender.track?.kind === 'video' && videoTrack) {
+                            sender.replaceTrack(videoTrack);
+                        }
+                    });
+                }
+                
+            });
+
+            dispatch(SET_LOCALSTREAM(stream));
+        }
+    }
+
+    useEffect( () => {
+        navigator.mediaDevices.addEventListener('devicechange', handleDeviceChange);
+        return () => {
+            navigator.mediaDevices.removeEventListener('devicechange', handleDeviceChange);
+        }
+    },[])
 
     return(
         <Grid height={'100vh'} container display={'flex'} flexDirection={'row'} bgcolor={'#343434'}>

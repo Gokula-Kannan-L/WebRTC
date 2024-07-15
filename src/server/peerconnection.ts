@@ -3,34 +3,34 @@ import { ParticipantType, PreferenceType, UserType } from "../redux/meetingSlice
 import { getChildRef, getParticipantRef, handleOnChildAdded, pushNewNode, updateData, writeData } from "./firebase";
 import { remove } from "firebase/database";
 
-// const servers: RTCConfiguration = {
-//     iceServers: [
-//       {
-//         urls: [
-//           process.env.REACT_APP_TURN_URL ? process.env.REACT_APP_TURN_URL : "",
-//         ],
-//         credential:  process.env.REACT_APP_TURN_CREDENTIAL,
-//         username: process.env.REACT_APP_TURN_USERNAME
-//       },
-//     ],
-//     iceCandidatePoolSize: 10,
-// };
-
 const servers: RTCConfiguration = {
-  iceServers: [
-    {
-      urls: [
-        "stun:stun1.l.google.com:19302",
-        "stun:stun2.l.google.com:19302",
-        "stun:stun.l.google.com:19302",
-        "stun:stun3.l.google.com:19302",
-        "stun:stun4.l.google.com:19302",
-        "stun:stun.services.mozilla.com",
-      ],
-    },
-  ],
-  iceCandidatePoolSize: 10,
+    iceServers: [
+      {
+        urls: [
+          process.env.REACT_APP_TURN_URL ? process.env.REACT_APP_TURN_URL : "",
+        ],
+        credential:  process.env.REACT_APP_TURN_CREDENTIAL,
+        username: process.env.REACT_APP_TURN_USERNAME
+      },
+    ],
+    iceCandidatePoolSize: 10,
 };
+
+// const servers: RTCConfiguration = {
+//   iceServers: [
+//     {
+//       urls: [
+//         "stun:stun1.l.google.com:19302",
+//         "stun:stun2.l.google.com:19302",
+//         "stun:stun.l.google.com:19302",
+//         "stun:stun3.l.google.com:19302",
+//         "stun:stun4.l.google.com:19302",
+//         "stun:stun.services.mozilla.com",
+//       ],
+//     },
+//   ],
+//   iceCandidatePoolSize: 10,
+// };
 
 
 export const updateUserPreference = (userKey: string, preference: PreferenceType) => {

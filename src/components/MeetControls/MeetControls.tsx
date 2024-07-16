@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect } from "react";
+import React, { FunctionComponent, useEffect, useState } from "react";
 import VideocamIcon from '@mui/icons-material/Videocam';
 import VideocamOffIcon from '@mui/icons-material/VideocamOff';
 import MicIcon from '@mui/icons-material/Mic';
@@ -12,13 +12,14 @@ import { RootState } from "../../redux/store";
 import { Button } from "@mui/material";
 import { leaveMeeting } from "../../server/peerconnection";
 import { getDisplayMedia, getMediaStream } from "../../helpers/helper";
+import DialogBox from "../DialogBox/DialogBox";
 
 type MeetControlsProps = {
     handleSnackBar: (open: boolean, message: string) => void
 }
 const MeetControls:FunctionComponent<MeetControlsProps> = ({handleSnackBar}) => {
     const dispatch = useDispatch();
-
+    const [dialogBox, setDialogBox] = useState<boolean>(false);
     const localstate = useSelector( (state: RootState) => state.meeting);
     const participants = useSelector( (state: RootState) => state.meeting.participants);
 
@@ -97,8 +98,6 @@ const MeetControls:FunctionComponent<MeetControlsProps> = ({handleSnackBar}) => 
                 console.log(error);
             });
         }
-        
-        
     }
 
     const handleLeave = async() => {
@@ -114,7 +113,19 @@ const MeetControls:FunctionComponent<MeetControlsProps> = ({handleSnackBar}) => 
            dispatch(RESET());   
            window.location.reload();
         }
-       
+    }
+
+    const handleEndMeeting = () => {
+        
+        Object.keys(localstate.participants).forEach( key => {
+            let user = localstate.participants[key];
+            console.log(user);
+            if(user?.peerConnection){
+                let pc = user.peerConnection as RTCPeerConnection;
+                pc.close();
+            }
+        });
+        handleLeave();
     }
 
     return(
@@ -135,7 +146,11 @@ const MeetControls:FunctionComponent<MeetControlsProps> = ({handleSnackBar}) => 
                 <div onClick={() => handleScreenShare(false)} style={{cursor: 'pointer'}}><CancelPresentationIcon sx={{fontSize:'25px', color: 'whitesmoke', borderRadius: '50%', backgroundColor: '#D2042D', padding: '10px'}}/></div> :
                 <div onClick={() => handleScreenShare(true)} style={{cursor: 'pointer'}}><PresentToAllIcon sx={{fontSize:'25px', color: 'whitesmoke', borderRadius: '50%', backgroundColor: '#F4C430', padding: '10px'}}/></div>
             }
-            <div onClick={handleLeave} style={{cursor: 'pointer'}}><CallEndIcon sx={{fontSize:'25px', color: 'whitesmoke', borderRadius: '50%', backgroundColor: '#D2042D', padding: '10px'}}/></div>
+            {localstate.hostInfo?.hostUserKey === localstate.currentUser?.key ?
+                <div onClick={() => setDialogBox(true)} style={{cursor: 'pointer'}}><CallEndIcon sx={{fontSize:'25px', color: 'whitesmoke', borderRadius: '50%', backgroundColor: '#D2042D', padding: '10px'}}/></div>:
+                <div onClick={handleLeave} style={{cursor: 'pointer'}}><CallEndIcon sx={{fontSize:'25px', color: 'whitesmoke', borderRadius: '50%', backgroundColor: '#D2042D', padding: '10px'}}/></div>
+            }
+            <DialogBox open={dialogBox} title="You're the host." content="Are you sure, do you want to end the call ?" agreeBtnMsg="Yes" disagreeMsg="No" handleAgree={handleEndMeeting} handleDisagree={ () => setDialogBox(false)}/>
         </div>
     )
 }

@@ -13,25 +13,25 @@ const RemoteUsers: FunctionComponent = () => {
     // Full High Definition (1080p): Around 3,000,000 - 6,000,000 bps
     // 4K (2160p): Around 15,000,000 - 25,000,000 bps
 
-    useEffect( () => {
-        Object.keys(participants).forEach( (userKey) => {
-            let user = participants[userKey];
-            if(user?.peerConnection){
-                const peerConnection = user.peerConnection as RTCPeerConnection;
-                peerConnection.getSenders().forEach( sender => {
-                    if(sender.track?.kind === 'video'){
-                        let parameters = sender.getParameters();
-                        if (!parameters.encodings) {
-                            parameters.encodings = [{}];
-                        }
+    // useEffect( () => {
+    //     Object.keys(participants).forEach( (userKey) => {
+    //         let user = participants[userKey];
+    //         if(user?.peerConnection){
+    //             const peerConnection = user.peerConnection as RTCPeerConnection;
+    //             peerConnection.getSenders().forEach( sender => {
+    //                 if(sender.track?.kind === 'video'){
+    //                     let parameters = sender.getParameters();
+    //                     if (!parameters.encodings) {
+    //                         parameters.encodings = [{}];
+    //                     }
     
-                        parameters.encodings[0].maxBitrate = 6000000; // Adjust bitrate as needed
-                        sender.setParameters(parameters);
-                    }
-                });
-            }
-        })
-    }, [participants])
+    //                     parameters.encodings[0].maxBitrate = 6000000; // Adjust bitrate as needed
+    //                     sender.setParameters(parameters);
+    //                 }
+    //             });
+    //         }
+    //     })
+    // }, [participants])
 
     return(
         <div className='remote-container' style={{overflowY: "auto", height: '100%'}}>

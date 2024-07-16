@@ -1,8 +1,8 @@
 
 export const getMediaStream = async(options: MediaStreamConstraints) => {
     const stream = await navigator.mediaDevices.getUserMedia({video: {
-        width: { max: 640 },
-        height: { max: 480 },
+        width: { min: 640, ideal: 1920, max: 1920 },
+        height: { min: 400, ideal: 1080 },
         frameRate: { max: 30 }
     },audio: options.audio});
     return stream;

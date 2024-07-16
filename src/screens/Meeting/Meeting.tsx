@@ -9,56 +9,69 @@ import ScreenTile from '../../components/VideoTile/ScreenTile/ScreenTile';
 import Snackbar from '@mui/material/Snackbar';
 import MeetTimer from '../../components/MeetTimer/MeetTimer';
 import { getMediaStream } from '../../helpers/helper';
-import { SET_LOCALSTREAM } from '../../redux/meetingSlice';
+import { MeetingState, SET_LOCALSTREAM } from '../../redux/meetingSlice';
 
 const Meeting = () => {
   
     const localState = useSelector((state: RootState) => state.meeting);
+    const localStateRef = useRef<MeetingState>(localState);
     const [open, setOpen] = useState<boolean>(false);
     const [message, setMessage] = useState<string>('');
     const dispatch = useDispatch();
+
+    useEffect(() => {
+        localStateRef.current = localState;
+    }, [localState]);
 
     const handleSnackBar = (open: boolean, message: string) => {
         setMessage(message);
         setOpen(open);  
     }
 
-    const handleDeviceChange = async(participants: any) => {
+    const handleDeviceChange = async() => {
+        const participants = localStateRef.current.participants;
+        const user = localStateRef.current.currentUser;
+
         const stream = await getMediaStream({audio: true, video: true});
-        console.log("device Chnaged000000" , stream);
-        console.log(participants)
-        if(stream){
 
-            Object.keys(participants).forEach(userKey => {
-                const peerConnection:RTCPeerConnection = participants[userKey].peerConnection;
-                console.log("user-------------",userKey, participants[userKey])
-                console.log("peerConnection ---------------", peerConnection);
-                if(peerConnection){
-                    const senders = peerConnection.getSenders();
+       
 
-                    const audioTrack = stream.getAudioTracks()[0];
-                    const videoTrack = stream.getVideoTracks()[0];
+        stream.getAudioTracks()[0].enabled = user?.preference.audio as boolean;
+        const audioTrack = stream.getAudioTracks()[0];
+                    
+        // stream.getVideoTracks()[0].enabled = user?.preference.video as boolean
+        // const videoTrack = stream.getVideoTracks()[0];
 
-                    senders.forEach(sender => {
-                        console.log("Sender--------------", sender);
-                        if (sender.track?.kind === 'audio' && audioTrack) {
-                            sender.replaceTrack(audioTrack);
-                        } else if (sender.track?.kind === 'video' && videoTrack) {
-                            sender.replaceTrack(videoTrack);
-                        }
-                    });
-                }
-                
-            });
+        console.log("New ---------", stream.getAudioTracks());
+        console.log("Old ---------", localStateRef?.current?.localStream?.getAudioTracks());
 
-            dispatch(SET_LOCALSTREAM(stream));
-        }
+        // dispatch(SET_LOCALSTREAM(stream));
+
+        Object.keys(participants).forEach(userKey => {
+            const peerConnection:RTCPeerConnection = participants[userKey].peerConnection;
+            if(peerConnection){
+
+                const sendersAudio = peerConnection.getSenders().find( (value) => value.track?.kind == 'audio');
+                console.log("sendersAudio------------", sendersAudio);
+                sendersAudio?.replaceTrack(audioTrack);
+                console.log("AftersendersAudio------------", sendersAudio);
+                // const sendersVideo = peerConnection.getSenders().find( (value) => value.track?.kind == 'video');
+                // sendersAudio?.replaceTrack(audioTrack);
+            
+                // senders && senders.forEach(sender => {
+                //     if (sender.track?.kind === 'audio' && audioTrack) {
+                //         sender.replaceTrack(audioTrack);
+                //     } else if (sender.track?.kind === 'video' && videoTrack) {
+                //         sender.replaceTrack(videoTrack);
+                //     }
+                // });
+            }
+        });
+
     }
 
     useEffect( () => {
-        navigator.mediaDevices.addEventListener('devicechange', () => {
-            console.log(localState.participants);
-        });
+        navigator.mediaDevices.addEventListener('devicechange', handleDeviceChange);
         return () => {
             navigator.mediaDevices.removeEventListener('devicechange', handleDeviceChange);
         }

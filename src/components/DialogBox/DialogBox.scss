@@ -1,0 +1,27 @@
+.dialogbox-container{
+    .MuiDialog-container{
+        .MuiDialog-paper{
+            background-color: #343434;
+            padding: 10px;
+            .dialogbox-title{
+                color: whitesmoke;
+                font-weight: 500;
+                padding: 10px;
+            }
+            .dialogbox-content{
+                .dialogbox-contenttext{
+                    color: whitesmoke;
+                }
+            }
+            .dialogbox-btns{
+                .dialogbox-yesbtn{
+                    background-color: #F4C430;
+                }
+                .dialogbox-nobtn{
+                    color: #D2042D;
+                    border: 1px solid #D2042D;
+                }
+            }
+        }
+    }
+}

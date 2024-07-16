@@ -11,7 +11,7 @@ const LocalTile:FunctionComponent = () => {
     useEffect( () => {
         if (VideoRef.current) {
             VideoRef.current.srcObject = localStream;
-            // VideoRef.current.muted = user?.preference.audio;
+            VideoRef.current.muted = true;
         }
 
     },[localStream, user?.preference.video]);

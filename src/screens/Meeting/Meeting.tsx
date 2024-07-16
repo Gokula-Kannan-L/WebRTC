@@ -1,4 +1,4 @@
-import React, { RefObject, useEffect, useRef, useState } from 'react';
+import React, { RefObject, useCallback, useEffect, useRef, useState } from 'react';
 import { Backdrop, Grid } from '@mui/material';
 import LocalTile from '../../components/VideoTile/LocalTile/LocalTile';
 import MeetControls from '../../components/MeetControls/MeetControls';
@@ -12,6 +12,7 @@ import { MeetingState, RESET, SET_LOCALSTREAM } from '../../redux/meetingSlice';
 import { getMeetingInfoRef } from '../../server/firebase';
 import { onChildRemoved } from 'firebase/database';
 import Toaster from '../../components/Toaster/Toaster';
+import { getMediaStream } from '../../helpers/helper';
 
 const Meeting = () => {
   
@@ -21,13 +22,44 @@ const Meeting = () => {
     const [message, setMessage] = useState<string>('');
     
     const [backdrop, setBackdrop] = useState<boolean>(false);
+    const [updateStream, setUpdateStream] = useState<MediaStream | null>(null);
 
     const dispatch = useDispatch();
 
+    const handleDeviceChange =async() => {
+       
+        console.log("Before Local Stream -----------", localState.localStream);
+        console.log("Before Local Audio -----------", localState.localStream?.getAudioTracks());
+    
+        const newStream = await getMediaStream({ video: true, audio: true });
+        setTimeout( () => {
+            setUpdateStream(newStream);
+        })
+    }
+
+    useEffect( () => {
+        if(updateStream){
+            console.log("New Stream:", updateStream);
+            console.log("New Audio:", updateStream.getAudioTracks());
+            dispatch(SET_LOCALSTREAM(updateStream))
+        }
+    }, [updateStream]);
+
+
+    useEffect( () => {
+        navigator?.mediaDevices.addEventListener( "devicechange" , handleDeviceChange);
+
+        return () => {
+            navigator?.mediaDevices.removeEventListener("devicechange", handleDeviceChange);
+          };
+    }, []);
+    
+
 
     useEffect(() => {
-        localStateRef.current = localState;
-    }, [localState]);
+        console.log("After Local Stream -----------", localState.localStream);
+        console.log("After Local Audio -----------", localState.localStream?.getAudioTracks());
+    }, [localState.localStream]);
 
     useEffect( () => {
         const MeetingInfoRef = getMeetingInfoRef();

@@ -17,7 +17,6 @@ import { getMediaStream } from '../../helpers/helper';
 const Meeting = () => {
   
     const localState = useSelector((state: RootState) => state.meeting);
-    const localStateRef = useRef<MeetingState>(localState);
     const [open, setOpen] = useState<boolean>(false);
     const [message, setMessage] = useState<string>('');
     
@@ -27,21 +26,29 @@ const Meeting = () => {
     const dispatch = useDispatch();
 
     const handleDeviceChange =async() => {
-       
-        console.log("Before Local Stream -----------", localState.localStream);
-        console.log("Before Local Audio -----------", localState.localStream?.getAudioTracks());
     
-        const newStream = await getMediaStream({ video: true, audio: true });
-        setTimeout( () => {
-            setUpdateStream(newStream);
-        })
+        const newStream = await getMediaStream({ video: true, audio: { echoCancellation: true} });
+        setUpdateStream(newStream);
     }
 
     useEffect( () => {
-        if(updateStream){
-            console.log("New Stream:", updateStream);
-            console.log("New Audio:", updateStream.getAudioTracks());
-            dispatch(SET_LOCALSTREAM(updateStream))
+        if(updateStream ){
+            console.log("old stream track : ", localState.localStream?.getAudioTracks());
+            console.log("new stream track : ", updateStream.getAudioTracks());
+
+            dispatch(SET_LOCALSTREAM(updateStream));
+            
+            Object.keys(localState.participants).forEach( (key) => {
+                let user = localState.participants[key];
+                if(user.peerConnection){
+                    let peerConnection = user.peerConnection as RTCPeerConnection;
+                    let sender = peerConnection.getSenders().find( (s) => s.track?.kind == 'audio');
+                    console.log("Before Sender : ", sender?.track );
+                    sender?.replaceTrack(updateStream.getAudioTracks()[0]);
+                    console.log("After Sender : ", sender?.track );
+                }
+            });
+            setUpdateStream(null);
         }
     }, [updateStream]);
 
@@ -54,12 +61,6 @@ const Meeting = () => {
           };
     }, []);
     
-
-
-    useEffect(() => {
-        console.log("After Local Stream -----------", localState.localStream);
-        console.log("After Local Audio -----------", localState.localStream?.getAudioTracks());
-    }, [localState.localStream]);
 
     useEffect( () => {
         const MeetingInfoRef = getMeetingInfoRef();

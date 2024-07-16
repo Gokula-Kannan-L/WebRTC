@@ -1,7 +1,7 @@
 import React, { FunctionComponent, useEffect, useRef, useState } from "react";
 import { Button, Grid, TextField, Typography } from "@mui/material";
 import { getMediaStream, getRandomColor } from "../../helpers/helper";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { UserType, SET_USER, SET_LOCALSTREAM, ADD_PARTICIPANTS, ParticipantType, REMOVE_PARTICIPANT, SET_MEET_ID, UPDATE_PARTICIPANT, RESET, UPDATE_SCREEN_SHARE, SET_HOST, HostType } from "../../redux/meetingSlice";
 import { useNavigate } from "react-router-dom";
 import { InitializeMeeting, JoinMeeting, getChildRef, getMeetingInfo } from "../../server/firebase";
@@ -19,6 +19,7 @@ type MeetFormType = {
 const MeetingForm:FunctionComponent<MeetFormType> = ({Type}) => {
 
     const videoRef = useRef<any>(null);
+
     const [localstream, setLocalStream] = useState<MediaStream>();
     const [username, setUserName] = useState<string>('');
     const [MeetId, setMeetID] = useState<string>('');

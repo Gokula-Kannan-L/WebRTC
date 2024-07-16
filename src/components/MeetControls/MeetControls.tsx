@@ -25,7 +25,6 @@ const MeetControls:FunctionComponent<MeetControlsProps> = ({handleSnackBar}) => 
 
     const ToggelVideo = (video: boolean) => {
         if(localstate.localStream && !localstate.currentUser?.preference.screen){
-            // localstate.localStream.getVideoTracks()[0].enabled = video;
             localstate.localStream.getTracks().find( (track) => {
                 if(track.kind == 'video'){
                     track.enabled = video;
@@ -37,7 +36,6 @@ const MeetControls:FunctionComponent<MeetControlsProps> = ({handleSnackBar}) => 
 
     const ToggleAudio = (audio: boolean) => {
         if(localstate.localStream){
-            // localstate.localStream.getAudioTracks()[0].enabled = audio;
             localstate.localStream.getTracks().find( (track) => {
                 if(track.kind == 'audio'){
                     track.enabled = audio;
@@ -116,15 +114,6 @@ const MeetControls:FunctionComponent<MeetControlsProps> = ({handleSnackBar}) => 
     }
 
     const handleEndMeeting = () => {
-        
-        Object.keys(localstate.participants).forEach( key => {
-            let user = localstate.participants[key];
-            console.log(user);
-            if(user?.peerConnection){
-                let pc = user.peerConnection as RTCPeerConnection;
-                pc.close();
-            }
-        });
         handleLeave();
     }
 

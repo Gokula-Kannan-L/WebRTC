@@ -17,7 +17,6 @@ export let dbRef = ref(getDatabase(app));
 
 let connectedRef = ref(getDatabase(app), ".info/connected");
 
-
 export const InitializeMeeting = (stream: MediaStream, user: UserType) => {
 
     dbRef = push(dbRef);
@@ -47,7 +46,7 @@ export const InitializeMeeting = (stream: MediaStream, user: UserType) => {
         hostUserKey: key,
         createdAt: String(new Date())
     });
-    onDisconnect(InfoRef).remove();
+    onDisconnect(MeetingInfoRef).remove();
 
     return {participantRef, contentshareRef, key, meetingId: dbRef.key, infoKey: InfoRef.key};
 }
@@ -57,6 +56,8 @@ export const JoinMeeting = (meetingId: string, user: UserType) => {
     dbRef = child(dbRef, meetingId);
     const participantRef = child(dbRef, 'participants');
     const contentshareRef = child(dbRef, 'contentshare');
+    const MeetingInfoRef = child(dbRef, 'MeetingInfo'); //Meeting Info Node
+
     let key:string = ''; 
 
     onValue(connectedRef, (snapshot) => {
@@ -75,7 +76,7 @@ export const JoinMeeting = (meetingId: string, user: UserType) => {
             onDisconnect(userRef).remove();
         }
     });
-
+    
     return {participantRef, contentshareRef ,key};
 }
 
@@ -105,6 +106,10 @@ export const getMeetingInfo = async() => {
 
 export const getParticipantRef = () => {
     return child(dbRef, 'participants');
+}
+
+export const getMeetingInfoRef = () => {
+    return child(dbRef, 'MeetingInfo');
 }
 
 export const getChildRef = (ref: DatabaseReference, path: string) => {

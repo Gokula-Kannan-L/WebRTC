@@ -1,5 +1,5 @@
 import React, { RefObject, useEffect, useRef, useState } from 'react';
-import { Grid } from '@mui/material';
+import { Backdrop, Grid } from '@mui/material';
 import LocalTile from '../../components/VideoTile/LocalTile/LocalTile';
 import MeetControls from '../../components/MeetControls/MeetControls';
 import RemoteUsers from '../../components/RemoteUsers/RemoteUsers';
@@ -8,8 +8,10 @@ import { RootState } from '../../redux/store';
 import ScreenTile from '../../components/VideoTile/ScreenTile/ScreenTile';
 import Snackbar from '@mui/material/Snackbar';
 import MeetTimer from '../../components/MeetTimer/MeetTimer';
-import { getMediaStream } from '../../helpers/helper';
-import { MeetingState, SET_LOCALSTREAM } from '../../redux/meetingSlice';
+import { MeetingState, RESET, SET_LOCALSTREAM } from '../../redux/meetingSlice';
+import { getMeetingInfoRef } from '../../server/firebase';
+import { onChildRemoved } from 'firebase/database';
+import Toaster from '../../components/Toaster/Toaster';
 
 const Meeting = () => {
   
@@ -17,65 +19,32 @@ const Meeting = () => {
     const localStateRef = useRef<MeetingState>(localState);
     const [open, setOpen] = useState<boolean>(false);
     const [message, setMessage] = useState<string>('');
+    
+    const [backdrop, setBackdrop] = useState<boolean>(false);
+
     const dispatch = useDispatch();
+
 
     useEffect(() => {
         localStateRef.current = localState;
     }, [localState]);
 
+    useEffect( () => {
+        const MeetingInfoRef = getMeetingInfoRef();
+        onChildRemoved(MeetingInfoRef, () => {
+            //Handle End Meeting, Since Host MeetInfo Removed
+            setBackdrop(true);
+            setTimeout( () => {
+                dispatch(RESET());
+                window.location.reload();
+            }, 3000);
+        });
+    }, []);
+
     const handleSnackBar = (open: boolean, message: string) => {
         setMessage(message);
         setOpen(open);  
     }
-
-    const handleDeviceChange = async() => {
-        const participants = localStateRef.current.participants;
-        const user = localStateRef.current.currentUser;
-
-        const stream = await getMediaStream({audio: true, video: true});
-
-       
-
-        stream.getAudioTracks()[0].enabled = user?.preference.audio as boolean;
-        const audioTrack = stream.getAudioTracks()[0];
-                    
-        // stream.getVideoTracks()[0].enabled = user?.preference.video as boolean
-        // const videoTrack = stream.getVideoTracks()[0];
-
-        console.log("New ---------", stream.getAudioTracks());
-        console.log("Old ---------", localStateRef?.current?.localStream?.getAudioTracks());
-
-        // dispatch(SET_LOCALSTREAM(stream));
-
-        Object.keys(participants).forEach(userKey => {
-            const peerConnection:RTCPeerConnection = participants[userKey].peerConnection;
-            if(peerConnection){
-
-                const sendersAudio = peerConnection.getSenders().find( (value) => value.track?.kind == 'audio');
-                console.log("sendersAudio------------", sendersAudio);
-                sendersAudio?.replaceTrack(audioTrack);
-                console.log("AftersendersAudio------------", sendersAudio);
-                // const sendersVideo = peerConnection.getSenders().find( (value) => value.track?.kind == 'video');
-                // sendersAudio?.replaceTrack(audioTrack);
-            
-                // senders && senders.forEach(sender => {
-                //     if (sender.track?.kind === 'audio' && audioTrack) {
-                //         sender.replaceTrack(audioTrack);
-                //     } else if (sender.track?.kind === 'video' && videoTrack) {
-                //         sender.replaceTrack(videoTrack);
-                //     }
-                // });
-            }
-        });
-
-    }
-
-    useEffect( () => {
-        navigator.mediaDevices.addEventListener('devicechange', handleDeviceChange);
-        return () => {
-            navigator.mediaDevices.removeEventListener('devicechange', handleDeviceChange);
-        }
-    },[])
 
     return(
         <Grid height={'100vh'} container display={'flex'} flexDirection={'row'} bgcolor={'#343434'}>
@@ -106,6 +75,10 @@ const Meeting = () => {
             <Grid item xs={12} bgcolor={'#000000'} height={'10%'}>
                 <MeetControls handleSnackBar={handleSnackBar}/>
             </Grid>
+    
+            <Backdrop open={backdrop} >
+                <Toaster message="You're host ended the meeting. You will be redirected." severity="error" />
+            </Backdrop>
         </Grid>
     )
 }

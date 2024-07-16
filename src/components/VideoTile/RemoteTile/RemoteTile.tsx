@@ -31,6 +31,11 @@ const RemoteTile:FunctionComponent<RemoteUserType> = ({remoteUser, index, IsHost
         }
     },[remoteUser]);
 
+    useEffect( () => {
+        console.log("Remote Stream : ", remoteUser.remoteStream);
+        console.log("Remote Track : ", remoteUser.remoteStream.getAudioTracks());
+    }, [remoteUser.remoteStream])
+
     return(
         <>
             {remoteUser.preference.video ?

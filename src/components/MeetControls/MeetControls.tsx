@@ -37,7 +37,8 @@ const MeetControls:FunctionComponent<MeetControlsProps> = ({handleSnackBar}) => 
     useEffect( () => {
        if(localstate.localStream?.getAudioTracks()[0].label !== localstate.devicesList.audioInput[0].label){
         console.log("Device Changed From ", localstate.localStream?.getAudioTracks()[0].label, " to ", localstate.devicesList.audioInput[0].label);
-        localstate.localStream?.getAudioTracks()[0].stop();
+       
+        console.log("local :" , localstate.localStream?.getTracks());
 
        }
     }, [localstate.devicesList])

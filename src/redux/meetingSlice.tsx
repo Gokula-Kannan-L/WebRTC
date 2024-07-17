@@ -198,17 +198,6 @@ export const meetingSlice = createSlice({
             state.participants = participants;
         },
 
-        ADD_REMOTESTREAM: (state, action: PayloadAction<{key: string, remoteStream: MediaStream}>) => {
-            const {payload} = action;
-            if(state.participants[payload.key]){
-                state.participants[payload.key] = {
-                    ...state.participants[payload.key],
-                    remoteStream: payload.remoteStream,
-                    onTrackSet: true
-                }
-            }
-        },
-
         UPDATE_SCREEN_SHARE: (state, action: PayloadAction<{userkey:string, screen: boolean}>) => {
             let {payload} = action;
             if(state.IsScreenSharing && payload.userkey == state.ShareUser?.userkey && !payload.screen){
@@ -243,6 +232,6 @@ export const meetingSlice = createSlice({
     }
 });
 
-export const {SET_MEET_ID, SET_HOST, SET_USER, UPDATE_USER, SET_LOCALSTREAM, ADD_PARTICIPANTS, UPDATE_PARTICIPANT, REMOVE_PARTICIPANT, ADD_REMOTESTREAM, UPDATE_SCREEN_SHARE, UPDATE_DEVICE_LIST, RESET} = meetingSlice.actions;
+export const {SET_MEET_ID, SET_HOST, SET_USER, UPDATE_USER, SET_LOCALSTREAM, ADD_PARTICIPANTS, UPDATE_PARTICIPANT, REMOVE_PARTICIPANT, UPDATE_SCREEN_SHARE, UPDATE_DEVICE_LIST, RESET} = meetingSlice.actions;
 
 export default meetingSlice.reducer;

@@ -39,10 +39,16 @@ const MeetControls:FunctionComponent<MeetControlsProps> = ({handleSnackBar}) => 
             let user = participants[key];
             if(user.peerConnection){
                 let peerConnection = user.peerConnection as RTCPeerConnection;
-                let sender2 = peerConnection.getSenders()[0].track;
-                console.log("Sender ----", sender2, peerConnection.getSenders())
+                console.log("Peer Connection :" , peerConnection);
                 let sender = peerConnection.getSenders().find( (s) => ( s.track?.kind === "audio"));
-                sender?.replaceTrack(audioTrack);
+                if(sender){
+                    sender?.replaceTrack(audioTrack).then(() => {
+                        console.log(`Replaced audio track for user ${participants[key]}`);
+                    }).catch(error => {
+                        console.error(`Error replacing audio track for user ${key}:`, error);
+                    });
+                }
+               
             }
        });
 

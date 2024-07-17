@@ -1,5 +1,20 @@
+const contentType = 'video/VP9';
+
+const configuration:MediaEncodingConfiguration = {
+   type: "webrtc",
+   video: {
+    contentType,
+    width: 640,
+    height: 480,
+    bitrate: 10000,
+    framerate: 29.97,
+    scalabilityMode: 'L3T3_KEY'
+   }
+  };
 
 export const getMediaStream = async() => {
+    await navigator.mediaCapabilities.encodingInfo(configuration)
+
     const stream = await navigator.mediaDevices.getUserMedia({video: {
         width: { min: 640, ideal: 1920, max: 1920 },
         height: { min: 400, ideal: 1080 },

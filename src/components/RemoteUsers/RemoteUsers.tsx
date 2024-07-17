@@ -1,12 +1,15 @@
 import React, { FunctionComponent, useEffect } from 'react'
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
 import RemoteTile from '../VideoTile/RemoteTile/RemoteTile';
+import { ADD_REMOTESTREAM } from '../../redux/meetingSlice';
 
 const RemoteUsers: FunctionComponent = () => {
 
     const participants = useSelector((state: RootState) => state.meeting.participants);
     const host = useSelector((state:RootState) => state.meeting.hostInfo);
+
+    const dispatch = useDispatch();
     // Low Resolution (240p): Around 300,000 - 500,000 bps
     // Standard Definition (480p): Around 500,000 - 1,000,000 bps
     // High Definition (720p): Around 1,500,000 - 3,000,000 bps
@@ -32,6 +35,30 @@ const RemoteUsers: FunctionComponent = () => {
     //         }
     //     })
     // }, [participants])
+
+    useEffect( () => {
+        if(participants){
+            Object.keys(participants).forEach( (key) => {
+                let user = participants[key];
+
+                if(user.peerConnection && user.remoteStream && !(user?.onTrackSet)){
+                    let peerConnection = user.peerConnection as RTCPeerConnection;
+                    
+                    peerConnection.ontrack = (event: RTCTrackEvent) => {
+                        console.log("ontrack -----", event);
+
+                        let remoteStream = user.remoteStream as MediaStream
+                        event.streams[0].getTracks().forEach((track) => {
+                            remoteStream.addTrack(track);
+                        });
+                        dispatch(ADD_REMOTESTREAM({key, remoteStream}));
+                    };
+
+                   
+                }
+            })
+        }
+    }, [participants]);
 
     return(
         <div className='remote-container' style={{overflowY: "auto", height: '100%'}}>

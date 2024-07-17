@@ -1,5 +1,7 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { InitializeListeners, createconnection, updateUserPreference } from "../server/peerconnection";
+import { getMeetingInfo } from "../server/firebase";
+
 
 export type UserType =  {
     username: string,
@@ -145,23 +147,11 @@ export const meetingSlice = createSlice({
 
                 if(payload[participantkey]?.peerConnection){
                     
-                    const peerConnection = payload[participantkey]?.peerConnection as RTCPeerConnection;
-
                     const remoteStream = new MediaStream();
-
-                    peerConnection.ontrack = (event: RTCTrackEvent) => {
-                        console.log("ontrack -----", event);
-                        
-                        event.streams[0].getTracks().forEach((track) => {
-                            remoteStream.addTrack(track);
-                        });
-                        
-                        state.participants[participantkey] = {
-                            ...state.participants[participantkey],
-                            remoteStream: remoteStream,
-                            onTrackSet: true
-                        }
-                    };
+                    state.participants[participantkey] = {
+                        ...state.participants[participantkey],
+                        remoteStream: remoteStream,
+                    }
                 }
 
                 if(!state.IsScreenSharing && payload[participantkey].preference.screen){
@@ -198,6 +188,19 @@ export const meetingSlice = createSlice({
             state.participants = participants;
         },
 
+        ADD_REMOTESTREAM: (state, action: PayloadAction<{key: string, remoteStream: MediaStream}>) => {
+            const {payload} = action;
+
+            console.log("Updating Remote Stream.....", payload);
+            if(state.participants[payload.key]){
+                state.participants[payload.key] = {
+                    ...state.participants[payload.key],
+                    remoteStream: payload.remoteStream,
+                    onTrackSet: true
+                }
+            }
+        },
+
         UPDATE_SCREEN_SHARE: (state, action: PayloadAction<{userkey:string, screen: boolean}>) => {
             let {payload} = action;
             if(state.IsScreenSharing && payload.userkey == state.ShareUser?.userkey && !payload.screen){
@@ -232,6 +235,6 @@ export const meetingSlice = createSlice({
     }
 });
 
-export const {SET_MEET_ID, SET_HOST, SET_USER, UPDATE_USER, SET_LOCALSTREAM, ADD_PARTICIPANTS, UPDATE_PARTICIPANT, REMOVE_PARTICIPANT, UPDATE_SCREEN_SHARE, UPDATE_DEVICE_LIST, RESET} = meetingSlice.actions;
+export const {SET_MEET_ID, SET_HOST, SET_USER, UPDATE_USER, SET_LOCALSTREAM, ADD_PARTICIPANTS, UPDATE_PARTICIPANT, REMOVE_PARTICIPANT, ADD_REMOTESTREAM, UPDATE_SCREEN_SHARE, UPDATE_DEVICE_LIST, RESET} = meetingSlice.actions;
 
 export default meetingSlice.reducer;

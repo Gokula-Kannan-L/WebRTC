@@ -32,13 +32,6 @@ const servers: RTCConfiguration = {
 //   iceCandidatePoolSize: 10,
 // };
 
-// Add SVC configuration to the RTCConfiguration
-const svcEncodingParams = [
-  { rid: 'q', maxBitrate: 100000, scalabilityMode: 'L1T3' },
-  { rid: 'h', maxBitrate: 500000, scalabilityMode: 'L1T3' },
-  { rid: 'f', maxBitrate: 1500000, scalabilityMode: 'L1T3' }
-];
-
 
 export const updateUserPreference = (userKey: string, preference: PreferenceType) => {
   const participantRef = getParticipantRef();
@@ -114,16 +107,6 @@ export const createconnection = (currentUser: UserType, newUser: ParticipantType
     mediastream.getTracks().forEach( (track: MediaStreamTrack) => {
       peerConnection.addTrack(track, mediastream)
     });
-
-       // Set SVC encoding parameters
-    const videoSender = peerConnection.getSenders().find((sender: RTCRtpSender) => sender?.track?.kind === 'video');
-    if (videoSender) {
-        const params = videoSender?.getParameters();
-        if (params && params.encodings) {
-            params.encodings = svcEncodingParams;
-            videoSender?.setParameters(params).catch(error => console.error("Failed to set SVC parameters:", error));
-        }
-    }
 
     let currentUserKey = currentUser.key;
     let newUserKey = Object.keys(newUser)[0];

@@ -2,6 +2,13 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { InitializeListeners, createconnection, updateUserPreference } from "../server/peerconnection";
 import { getMeetingInfo } from "../server/firebase";
 
+// Add SVC configuration to the RTCConfiguration
+const svcEncodingParams = [
+    { rid: 'q', maxBitrate: 100000, scalabilityMode: 'L1T3' },
+    { rid: 'h', maxBitrate: 500000, scalabilityMode: 'L1T3' },
+    { rid: 'f', maxBitrate: 1500000, scalabilityMode: 'L1T3' }
+  ];
+  
 export type UserType =  {
     username: string,
     userid: string,
@@ -149,11 +156,27 @@ export const meetingSlice = createSlice({
                     const peerConnection = payload[participantkey]?.peerConnection as RTCPeerConnection;
                     const remoteStream = new MediaStream();
 
+                    peerConnection.addEventListener('track' , (event) => {
+                        console.log("Event Receiver Ref", event)
+                    })
+
+
                     peerConnection.ontrack = (event: RTCTrackEvent) => {
                         event.streams[0].getTracks().forEach((track) => {
                             remoteStream.addTrack(track);
                         });
                     };
+
+                    // Set SVC encoding parameters
+                    const videoSender = peerConnection.getSenders().find((sender: RTCRtpSender) => sender?.track?.kind === 'video');
+                    if (videoSender) {
+                        console.log(" SVC encoding parameters ", videoSender);
+                        const params = videoSender?.getParameters();
+                        if (params && params.encodings) {
+                            params.encodings = svcEncodingParams;
+                            videoSender?.setParameters(params).catch(error => console.error("Failed to set SVC parameters:", error));
+                        }
+                    }
 
                     state.participants[participantkey] = {
                         ...state.participants[participantkey],

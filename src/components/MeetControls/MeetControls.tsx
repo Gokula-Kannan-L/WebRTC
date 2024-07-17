@@ -30,34 +30,16 @@ const MeetControls:FunctionComponent<MeetControlsProps> = ({handleSnackBar}) => 
     const [videoDeviceToggle, setVideoDeviceToggle] = useState<boolean>(false);
     const [audiDeviceToggle, setAudioDeviceToggle] = useState<boolean>(false);
 
-    const updateNewStream = async() => {
-        const newStream = await getMediaStream();
+    const updateStream = () => {
 
-     Object.keys(participants).forEach( (key) => {
-            let user = participants[key];
-            if(user.peerConnection && newStream){
-                let peerConnection = user.peerConnection as RTCPeerConnection;
-                let sender = peerConnection.getSenders();
-                sender.forEach( (s) => {
-                    peerConnection.removeTrack(s);
-                })
-                
-                newStream.getTracks().forEach( (track: MediaStreamTrack) => {
-                    peerConnection.addTrack(track, newStream)
-                });
-            }
-       });
-
-       dispatch(SET_LOCALSTREAM(newStream));
     }
 
     useEffect( () => {
-        if(localstate.localStream?.getAudioTracks()[0].label != localstate.devicesList.audioInput[0].label){
-            console.log("changed from ", localstate.localStream?.getAudioTracks()[0].label, " to ", localstate.devicesList.audioInput[0].label);
-            updateNewStream();
-        }else{
-            console.log("Not changed from ", localstate.localStream?.getAudioTracks()[0].label, " to ", localstate.devicesList.audioInput[0].label)
-        }
+       if(localstate.localStream?.getAudioTracks()[0].label !== localstate.devicesList.audioInput[0].label){
+        console.log("Device Changed From ", localstate.localStream?.getAudioTracks()[0].label, " to ", localstate.devicesList.audioInput[0].label);
+        localstate.localStream?.getAudioTracks()[0].stop();
+
+       }
     }, [localstate.devicesList])
 
     const ToggelVideo = (video: boolean) => {

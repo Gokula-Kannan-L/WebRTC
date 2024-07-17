@@ -60,7 +60,7 @@ const Meeting = () => {
 
             const videoInput = devices.filter(device => device.kind === 'videoinput');
             dispatch(UPDATE_DEVICE_LIST({ list: videoInput, type: deviceTypes.videoInput }));
-        }, 500); // Debounce timeout of 300ms
+        }, 800); // Debounce timeout of 300ms
     };
 
     useEffect(() => {

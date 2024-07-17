@@ -44,12 +44,15 @@ const RemoteUsers: FunctionComponent = () => {
                 if(user.peerConnection && user.remoteStream ){
                     let peerConnection = user.peerConnection as RTCPeerConnection;
                     
-                    peerConnection.ontrack = (event: RTCTrackEvent) => {
+                    peerConnection.ontrack = async(event: RTCTrackEvent) => {
                         console.log("ontrack -----", event);
 
-                        let remoteStream = user.remoteStream as MediaStream
-                        event.streams[0].getTracks().forEach((track) => {
+                        let remoteStream = user.remoteStream as MediaStream;
+                        event.streams[0].getTracks().forEach((track: MediaStreamTrack) => {
                             remoteStream.addTrack(track);
+                            track.addEventListener('ended', (event) => {
+                                console.log("Event Endend", event, track);
+                            })
                         });
                         dispatch(ADD_REMOTESTREAM({key, remoteStream}));
                     };

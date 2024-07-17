@@ -30,7 +30,6 @@ const RemoteTile:FunctionComponent<RemoteUserType> = ({remoteUser, index, IsHost
         if(AudioRef.current){
             AudioRef.current.srcObject = remoteUser.remoteStream;
         }
-        console.log("peerConnection: ",remoteUser.peerConnection)
     },[remoteUser]);
 
     return(

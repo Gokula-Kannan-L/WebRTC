@@ -148,6 +148,7 @@ export const meetingSlice = createSlice({
                 if(payload[participantkey]?.peerConnection){
                     
                     const remoteStream = new MediaStream();
+                    
                     state.participants[participantkey] = {
                         ...state.participants[participantkey],
                         remoteStream: remoteStream,

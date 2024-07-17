@@ -1,10 +1,10 @@
 
-export const getMediaStream = async(options: MediaStreamConstraints) => {
+export const getMediaStream = async() => {
     const stream = await navigator.mediaDevices.getUserMedia({video: {
         width: { min: 640, ideal: 1920, max: 1920 },
         height: { min: 400, ideal: 1080 },
         frameRate: { max: 30 }
-    },audio: options.audio});
+    },audio: { echoCancellation: true}});
     return stream;
 }  
 
@@ -14,7 +14,7 @@ export const getDisplayMedia = async(options: DisplayMediaStreamOptions) => {
 
 
 export const handleDeviceChange = async() => {
-    const newStream = await getMediaStream({ video: true, audio: { echoCancellation: true } });
+    const newStream = await getMediaStream();
     console.log("New Stream ", newStream);
     console.log("Track ", newStream.getTracks());
 

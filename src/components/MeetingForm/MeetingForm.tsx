@@ -28,7 +28,7 @@ const MeetingForm:FunctionComponent<MeetFormType> = ({Type}) => {
 
     const getStream = async() => {
         try{
-            const stream = await getMediaStream({audio: true, video: true});
+            const stream = await getMediaStream();
             if(stream){
                 videoRef.current.srcObject = stream;
                 setLocalStream(stream);

@@ -31,13 +31,16 @@ const MeetControls:FunctionComponent<MeetControlsProps> = ({handleSnackBar}) => 
     const [audiDeviceToggle, setAudioDeviceToggle] = useState<boolean>(false);
 
     const updateNewStream = async() => {
-        const newStream = await getMediaStream({audio: {echoCancellation: true}});
+        const newStream = await getMediaStream();
         let audioTrack = newStream.getAudioTracks()[0];
         audioTrack.enabled = localstate.currentUser?.preference.audio as boolean;
+
        Object.keys(participants).forEach( (key) => {
             let user = participants[key];
             if(user.peerConnection){
                 let peerConnection = user.peerConnection as RTCPeerConnection;
+                let sender2 = peerConnection.getSenders()[0].track;
+                console.log("Sender ----", sender2, peerConnection.getSenders())
                 let sender = peerConnection.getSenders().find( (s) => ( s.track?.kind === "audio"));
                 sender?.replaceTrack(audioTrack);
             }
@@ -114,7 +117,7 @@ const MeetControls:FunctionComponent<MeetControlsProps> = ({handleSnackBar}) => 
                 UpdateRemoteStreams(stream, true);
 
                 stream.getVideoTracks()[0].onended = async() => {
-                    await getMediaStream({audio: localstate.currentUser?.preference.audio, video: localstate.currentUser?.preference.video}).then( stream => {
+                    await getMediaStream().then( stream => {
                         UpdateRemoteStreams(stream, false);
                     });
                 }
@@ -122,7 +125,7 @@ const MeetControls:FunctionComponent<MeetControlsProps> = ({handleSnackBar}) => 
             console.log(error);
            });
         }else{
-            await getMediaStream({audio: true, video: true}).then( stream => {
+            await getMediaStream().then( stream => {
                 UpdateRemoteStreams(stream, false);
             }).catch( error => {
                 console.log(error);

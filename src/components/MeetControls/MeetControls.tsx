@@ -31,17 +31,27 @@ const MeetControls:FunctionComponent<MeetControlsProps> = ({handleSnackBar}) => 
     const [audiDeviceToggle, setAudioDeviceToggle] = useState<boolean>(false);
 
     const updateNewStream = async() => {
-        console.log("Before ---------------", localstate.localStream?.getAudioTracks());
         const newStream = await getMediaStream();
         let audioTrack = newStream.getAudioTracks()[0];
-        localstate.localStream?.addTrack(audioTrack);
+        audioTrack.enabled = localstate.currentUser?.preference.audio as boolean;
 
-        localstate.localStream?.getAudioTracks().forEach( (track) => {
-            if(track.readyState == "ended"){
-                localstate.localStream?.removeTrack(track);
+       Object.keys(participants).forEach( (key) => {
+            let user = participants[key];
+            if(user.peerConnection){
+                let peerConnection = user.peerConnection as RTCPeerConnection;
+                let sender = peerConnection.getSenders().find( (s) => ( s.track?.kind === "audio"));
+                if(sender){
+                    sender?.replaceTrack(audioTrack).then(() => {
+                        console.log(`Replaced audio track for user ${user}`, sender?.track);
+                    }).catch(error => {
+                        console.error(`Error replacing audio track for user ${key}:`, error);
+                    });
+                }
+               
             }
-        });
-        console.log("After============", localstate.localStream?.getAudioTracks());
+       });
+
+       dispatch(SET_LOCALSTREAM(newStream));
     }
 
     useEffect( () => {

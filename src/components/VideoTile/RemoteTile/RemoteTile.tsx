@@ -11,7 +11,8 @@ export type RemoteUserType = {
             audio: boolean,
             video: boolean,
             screen: boolean,
-        }
+        },
+        peerConnection: RTCPeerConnection,
         avatar: string,
         remoteStream: MediaStream;
     }
@@ -29,6 +30,7 @@ const RemoteTile:FunctionComponent<RemoteUserType> = ({remoteUser, index, IsHost
         if(AudioRef.current){
             AudioRef.current.srcObject = remoteUser.remoteStream;
         }
+        console.log("peerConnection: ",remoteUser.peerConnection)
     },[remoteUser]);
 
     return(

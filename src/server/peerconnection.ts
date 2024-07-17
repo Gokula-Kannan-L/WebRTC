@@ -115,13 +115,15 @@ export const createconnection = (currentUser: UserType, newUser: ParticipantType
       peerConnection.addTrack(track, mediastream)
     });
 
-     // Set SVC encoding parameters
-     const videoSender = peerConnection.getSenders().find((sender:RTCRtpSender) => sender?.track?.kind === 'video');
-     if (videoSender) {
-         const params = videoSender.getParameters();
-         params.encodings = svcEncodingParams;
-         videoSender.setParameters(params);
-     }
+       // Set SVC encoding parameters
+    const videoSender = peerConnection.getSenders().find((sender: RTCRtpSender) => sender?.track?.kind === 'video');
+    if (videoSender) {
+        const params = videoSender?.getParameters();
+        if (params && params.encodings) {
+            params.encodings = svcEncodingParams;
+            videoSender?.setParameters(params).catch(error => console.error("Failed to set SVC parameters:", error));
+        }
+    }
 
     let currentUserKey = currentUser.key;
     let newUserKey = Object.keys(newUser)[0];

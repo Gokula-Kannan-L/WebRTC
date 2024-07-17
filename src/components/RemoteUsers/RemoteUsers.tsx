@@ -38,7 +38,12 @@ const RemoteUsers: FunctionComponent = () => {
             {
                 Object.keys(participants).length > 0 && Object.keys(participants).map( (key, index) => {
                     const user = participants[key];
-        
+                    if(user.peerConnection){
+                        user.peerConnection.ontrack = (event: RTCTrackEvent) => {
+                            console.log("ontrack -----", event);
+                        };
+                    }
+                   
                     if(user?.IsCurrentUser)
                         return;
                     

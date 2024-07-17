@@ -32,22 +32,19 @@ const MeetControls:FunctionComponent<MeetControlsProps> = ({handleSnackBar}) => 
 
     const updateNewStream = async() => {
         const newStream = await getMediaStream();
-        let audioTrack = newStream.getAudioTracks()[0];
-        audioTrack.enabled = localstate.currentUser?.preference.audio as boolean;
 
-       Object.keys(participants).forEach( (key) => {
+     Object.keys(participants).forEach( (key) => {
             let user = participants[key];
-            if(user.peerConnection){
+            if(user.peerConnection && newStream){
                 let peerConnection = user.peerConnection as RTCPeerConnection;
-                let sender = peerConnection.getSenders().find( (s) => ( s.track?.kind === "audio"));
-                if(sender){
-                    sender?.replaceTrack(audioTrack).then(() => {
-                        console.log(`Replaced audio track for user ${user}`, sender?.track);
-                    }).catch(error => {
-                        console.error(`Error replacing audio track for user ${key}:`, error);
-                    });
-                }
-               
+                let sender = peerConnection.getSenders();
+                sender.forEach( (s) => {
+                    peerConnection.removeTrack(s);
+                })
+                
+                newStream.getTracks().forEach( (track: MediaStreamTrack) => {
+                    peerConnection.addTrack(track, newStream)
+                });
             }
        });
 

@@ -51,16 +51,13 @@ const Meeting = () => {
         }
 
         debounceRef.current = setTimeout(async () => {
-            const devices = await navigator.mediaDevices.enumerateDevices();
-            const audioInput = devices.filter(device => device.kind === 'audioinput');
-            dispatch(UPDATE_DEVICE_LIST({ list: audioInput, type: deviceTypes.audioInput }));
-
-            const audioOutput = devices.filter(device => device.kind === 'audiooutput');
-            dispatch(UPDATE_DEVICE_LIST({ list: audioOutput, type: deviceTypes.audioOutput }));
-
-            const videoInput = devices.filter(device => device.kind === 'videoinput');
-            dispatch(UPDATE_DEVICE_LIST({ list: videoInput, type: deviceTypes.videoInput }));
-        }, 800); // Debounce timeout of 300ms
+            await navigator.mediaDevices.enumerateDevices().then( (value) => {
+                const audioInput = value.filter( device => device.kind === "audioinput");
+                const audioOutput = value.filter( device => device.kind === "audiooutput");
+                const videoInput = value.filter( device => device.kind === "videoinput");
+                dispatch(UPDATE_DEVICE_LIST({ audioInput, audioOutput, videoInput}));
+            });
+        }, 1000); // Debounce timeout of 300ms
     };
 
     useEffect(() => {

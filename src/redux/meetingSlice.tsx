@@ -148,7 +148,7 @@ export const meetingSlice = createSlice({
                 if(payload[participantkey]?.peerConnection){
                     
                     const remoteStream = new MediaStream();
-                    
+
                     state.participants[participantkey] = {
                         ...state.participants[participantkey],
                         remoteStream: remoteStream,
@@ -219,14 +219,9 @@ export const meetingSlice = createSlice({
             }
         },
 
-        UPDATE_DEVICE_LIST: (state, action: PayloadAction<{list: MediaDeviceInfo[], type:deviceTypes}>) => {
+        UPDATE_DEVICE_LIST: (state, action: PayloadAction<{audioInput: MediaDeviceInfo[], audioOutput: MediaDeviceInfo[], videoInput: MediaDeviceInfo[]} >) => {
             let {payload} = action;
-            if(payload.type == deviceTypes.audioInput)
-                state.devicesList = {...state.devicesList, audioInput: payload.list}
-            else if(payload.type == deviceTypes.audioOutput)
-                state.devicesList = {...state.devicesList, audioOutput: payload.list}
-            else if(payload.type == deviceTypes.videoInput)
-                state.devicesList = {...state.devicesList, videoInput: payload.list}
+            state.devicesList = payload;     
         },
 
         RESET: (state) => {

@@ -108,14 +108,10 @@ const MeetingForm:FunctionComponent<MeetFormType> = ({Type}) => {
 
             await navigator.mediaDevices.enumerateDevices().then( (value) => {
                 const audioInput = value.filter( device => device.kind === "audioinput");
-                dispatch(UPDATE_DEVICE_LIST({list: audioInput, type: deviceTypes.audioInput}));
-
-                const audiooutput = value.filter( device => device.kind === "audiooutput");
-                dispatch(UPDATE_DEVICE_LIST({list: audiooutput, type: deviceTypes.audioOutput}));
-
-                const videoinput = value.filter( device => device.kind === "videoinput");
-                dispatch(UPDATE_DEVICE_LIST({list: videoinput, type: deviceTypes.videoInput}));
-
+                const audioOutput = value.filter( device => device.kind === "audiooutput");
+                const videoInput = value.filter( device => device.kind === "videoinput");
+              
+                dispatch(UPDATE_DEVICE_LIST({ audioInput, audioOutput, videoInput}));
             });
             
             navigate('/meeting');
@@ -192,14 +188,10 @@ const MeetingForm:FunctionComponent<MeetFormType> = ({Type}) => {
             
             await navigator.mediaDevices.enumerateDevices().then( (value) => {
                 const audioInput = value.filter( device => device.kind === "audioinput");
-                dispatch(UPDATE_DEVICE_LIST({list: audioInput, type: deviceTypes.audioInput}));
-
-                const audiooutput = value.filter( device => device.kind === "audiooutput");
-                dispatch(UPDATE_DEVICE_LIST({list: audiooutput, type: deviceTypes.audioOutput}));
-
-                const videoinput = value.filter( device => device.kind === "videoinput");
-                dispatch(UPDATE_DEVICE_LIST({list: videoinput, type: deviceTypes.videoInput}));
-
+                const audioOutput = value.filter( device => device.kind === "audiooutput");
+                const videoInput = value.filter( device => device.kind === "videoinput");
+              
+                dispatch(UPDATE_DEVICE_LIST({ audioInput, audioOutput, videoInput}));
             });
            
             navigate('/meeting');

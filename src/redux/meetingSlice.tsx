@@ -52,9 +52,20 @@ export type HostType = {
     hostUserKey: string
     createdAt: string
 }
+
+export enum deviceTypes {
+    audioInput = 'audioInput',
+    audioOutput = 'audioOutput',
+    videoInput = 'videoInput'
+}
 export interface MeetingState {
     meetingId: string,
-    hostInfo:  HostType | null,
+    devicesList: { 
+        audioInput: MediaDeviceInfo[] | []
+        audioOutput:  MediaDeviceInfo[] | []
+        videoInput: MediaDeviceInfo[] | []
+    } 
+    hostInfo:  HostType | null
     currentUser: UserType | null
     localStream: MediaStream | null
     peerConnection?: RTCPeerConnection //Current User
@@ -69,6 +80,11 @@ export interface MeetingState {
 
 const initialState: MeetingState  =  {
     meetingId: '',
+    devicesList: {
+        audioInput: [],
+        audioOutput: [],
+        videoInput: []
+    },
     hostInfo: null,
     currentUser: null,
     localStream: null,
@@ -211,7 +227,16 @@ export const meetingSlice = createSlice({
                     username: state.participants[payload.userkey].username,
                 }
             }
+        },
 
+        UPDATE_DEVICE_LIST: (state, action: PayloadAction<{list: MediaDeviceInfo[], type:deviceTypes}>) => {
+            let {payload} = action;
+            if(payload.type == deviceTypes.audioInput)
+                state.devicesList = {...state.devicesList, audioInput: payload.list}
+            else if(payload.type == deviceTypes.audioOutput)
+                state.devicesList = {...state.devicesList, audioOutput: payload.list}
+            else if(payload.type == deviceTypes.videoInput)
+                state.devicesList = {...state.devicesList, videoInput: payload.list}
         },
 
         RESET: (state) => {
@@ -221,6 +246,6 @@ export const meetingSlice = createSlice({
     }
 });
 
-export const {SET_MEET_ID, SET_HOST, SET_USER, UPDATE_USER, SET_LOCALSTREAM, ADD_PARTICIPANTS, UPDATE_PARTICIPANT, REMOVE_PARTICIPANT, ADD_REMOTESTREAM, UPDATE_SCREEN_SHARE, RESET} = meetingSlice.actions;
+export const {SET_MEET_ID, SET_HOST, SET_USER, UPDATE_USER, SET_LOCALSTREAM, ADD_PARTICIPANTS, UPDATE_PARTICIPANT, REMOVE_PARTICIPANT, ADD_REMOTESTREAM, UPDATE_SCREEN_SHARE, UPDATE_DEVICE_LIST, RESET} = meetingSlice.actions;
 
 export default meetingSlice.reducer;

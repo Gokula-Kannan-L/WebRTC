@@ -8,11 +8,10 @@ import { RootState } from '../../redux/store';
 import ScreenTile from '../../components/VideoTile/ScreenTile/ScreenTile';
 import Snackbar from '@mui/material/Snackbar';
 import MeetTimer from '../../components/MeetTimer/MeetTimer';
-import { MeetingState, RESET, SET_LOCALSTREAM } from '../../redux/meetingSlice';
+import { deviceTypes, RESET, UPDATE_DEVICE_LIST } from '../../redux/meetingSlice';
 import { getMeetingInfoRef } from '../../server/firebase';
 import { onChildRemoved } from 'firebase/database';
 import Toaster from '../../components/Toaster/Toaster';
-import { getMediaStream } from '../../helpers/helper';
 
 const Meeting = () => {
   
@@ -21,46 +20,59 @@ const Meeting = () => {
     const [message, setMessage] = useState<string>('');
     
     const [backdrop, setBackdrop] = useState<boolean>(false);
-    const [updateStream, setUpdateStream] = useState<MediaStream | null>(null);
 
     const dispatch = useDispatch();
+    const listenerRef = useRef<any>(null);
+    const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
-    const handleDeviceChange =async() => {
-    
-        const newStream = await getMediaStream({ video: true, audio: { echoCancellation: true} });
-        setUpdateStream(newStream);
-    }
+    useEffect(() => {
+        const MeetingInfoRef = getMeetingInfoRef();
+        onChildRemoved(MeetingInfoRef, () => {
+            setBackdrop(true);
+            setTimeout(() => {
+                dispatch(RESET());
+                window.location.reload();
+            }, 3000);
+        });
+    }, [dispatch]);
 
-    useEffect( () => {
-        if(updateStream ){
-            console.log("old stream track : ", localState.localStream?.getAudioTracks());
-            console.log("new stream track : ", updateStream.getAudioTracks());
+    useEffect(() => {
+        return () => {
+            if (listenerRef.current) {
+                navigator.mediaDevices.removeEventListener('devicechange', listenerRef.current);
+                listenerRef.current = null;
+            }
+        };
+    }, []);
 
-            dispatch(SET_LOCALSTREAM(updateStream));
-            
-            Object.keys(localState.participants).forEach( (key) => {
-                let user = localState.participants[key];
-                if(user.peerConnection){
-                    let peerConnection = user.peerConnection as RTCPeerConnection;
-                    let sender = peerConnection.getSenders().find( (s) => s.track?.kind == 'audio');
-                    console.log("Before Sender : ", sender?.track );
-                    sender?.replaceTrack(updateStream.getAudioTracks()[0]);
-                    console.log("After Sender : ", sender?.track );
-                }
-            });
-            setUpdateStream(null);
+    const handleDeviceChange = () => {
+        if (debounceRef.current) {
+            clearTimeout(debounceRef.current);
         }
-    }, [updateStream]);
 
+        debounceRef.current = setTimeout(async () => {
+            const devices = await navigator.mediaDevices.enumerateDevices();
+            const audioInput = devices.filter(device => device.kind === 'audioinput');
+            dispatch(UPDATE_DEVICE_LIST({ list: audioInput, type: deviceTypes.audioInput }));
 
-    useEffect( () => {
-        navigator?.mediaDevices.addEventListener( "devicechange" , handleDeviceChange);
+            const audioOutput = devices.filter(device => device.kind === 'audiooutput');
+            dispatch(UPDATE_DEVICE_LIST({ list: audioOutput, type: deviceTypes.audioOutput }));
+
+            const videoInput = devices.filter(device => device.kind === 'videoinput');
+            dispatch(UPDATE_DEVICE_LIST({ list: videoInput, type: deviceTypes.videoInput }));
+        }, 500); // Debounce timeout of 300ms
+    };
+
+    useEffect(() => {
+        listenerRef.current = handleDeviceChange;
+        navigator.mediaDevices.addEventListener('devicechange', listenerRef.current);
 
         return () => {
-            navigator?.mediaDevices.removeEventListener("devicechange", handleDeviceChange);
-          };
+            if (listenerRef.current) {
+                navigator.mediaDevices.removeEventListener('devicechange', listenerRef.current);
+            }
+        };
     }, []);
-    
 
     useEffect( () => {
         const MeetingInfoRef = getMeetingInfoRef();
@@ -88,7 +100,7 @@ const Meeting = () => {
                 message={message}
             />
             {localState.participantsCount > 1 ? 
-            <Grid item xs={12} sx={{display: "flex", flexDirection: 'row'}} height={'90%'}>
+            <Grid item xs={12} sx={{display: "flex", flexDirection: 'row'}} height={'88%'}>
                 <Grid xs={9.5} item padding={"20px"} bgcolor={'#343434'} position={'relative'} >
                     {/* <MeetTimer /> */}
                     {localState.IsScreenSharing ? <ScreenTile /> :  <LocalTile />}
@@ -98,14 +110,14 @@ const Meeting = () => {
                 </Grid>
             </Grid>
             :
-            <Grid item xs={12} sx={{display: "flex", flexDirection: 'row'}} height={'90%'}>
+            <Grid item xs={12} sx={{display: "flex", flexDirection: 'row'}} height={'88%'}>
                 <div style={{width: '100%', padding: '20px', position: 'relative'}}>
                     {/* <MeetTimer /> */}
                     {(localState.IsScreenSharing && localState.ShareUser?.userkey) ? <ScreenTile /> :  <LocalTile />}
                 </div>
             </Grid>
             }
-            <Grid item xs={12} bgcolor={'#000000'} height={'10%'}>
+            <Grid item xs={12} bgcolor={'#000000'} height={'12%'}>
                 <MeetControls handleSnackBar={handleSnackBar}/>
             </Grid>
     

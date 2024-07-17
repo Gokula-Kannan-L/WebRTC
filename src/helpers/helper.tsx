@@ -12,6 +12,26 @@ export const getDisplayMedia = async(options: DisplayMediaStreamOptions) => {
     return await navigator.mediaDevices.getDisplayMedia(options);
 }
 
+
+export const handleDeviceChange = async() => {
+    const newStream = await getMediaStream({ video: true, audio: { echoCancellation: true } });
+    console.log("New Stream ", newStream);
+    console.log("Track ", newStream.getTracks());
+
+    return newStream;
+}
+
+
+
+
+
+
+
+
+
+
+
+
 export const getRandomColor = () => {
     const hex = Math.floor(Math.random() * 0xFFFFFF).toString(16);
     return `#${hex.padStart(6, '0')}`;

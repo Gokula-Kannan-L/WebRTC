@@ -2,7 +2,7 @@ import React, { FunctionComponent, useEffect, useRef, useState } from "react";
 import { Button, Grid, TextField, Typography } from "@mui/material";
 import { getMediaStream, getRandomColor } from "../../helpers/helper";
 import { useDispatch, useSelector } from "react-redux";
-import { UserType, SET_USER, SET_LOCALSTREAM, ADD_PARTICIPANTS, ParticipantType, REMOVE_PARTICIPANT, SET_MEET_ID, UPDATE_PARTICIPANT, RESET, UPDATE_SCREEN_SHARE, SET_HOST, HostType } from "../../redux/meetingSlice";
+import { UserType, SET_USER, SET_LOCALSTREAM, ADD_PARTICIPANTS, ParticipantType, REMOVE_PARTICIPANT, SET_MEET_ID, UPDATE_PARTICIPANT, RESET, UPDATE_SCREEN_SHARE, SET_HOST, HostType, UPDATE_DEVICE_LIST, deviceTypes } from "../../redux/meetingSlice";
 import { useNavigate } from "react-router-dom";
 import { InitializeMeeting, JoinMeeting, getChildRef, getMeetingInfo } from "../../server/firebase";
 import { v4 as uuidv4 } from 'uuid';
@@ -105,6 +105,18 @@ const MeetingForm:FunctionComponent<MeetFormType> = ({Type}) => {
                     dispatch(REMOVE_PARTICIPANT(snapshot.key));
                 }
             });
+
+            await navigator.mediaDevices.enumerateDevices().then( (value) => {
+                const audioInput = value.filter( device => device.kind === "audioinput");
+                dispatch(UPDATE_DEVICE_LIST({list: audioInput, type: deviceTypes.audioInput}));
+
+                const audiooutput = value.filter( device => device.kind === "audiooutput");
+                dispatch(UPDATE_DEVICE_LIST({list: audiooutput, type: deviceTypes.audioOutput}));
+
+                const videoinput = value.filter( device => device.kind === "videoinput");
+                dispatch(UPDATE_DEVICE_LIST({list: videoinput, type: deviceTypes.videoInput}));
+
+            });
             
             navigate('/meeting');
         }
@@ -178,7 +190,18 @@ const MeetingForm:FunctionComponent<MeetFormType> = ({Type}) => {
                     dispatch(REMOVE_PARTICIPANT(snapshot.key));
             });
             
-            
+            await navigator.mediaDevices.enumerateDevices().then( (value) => {
+                const audioInput = value.filter( device => device.kind === "audioinput");
+                dispatch(UPDATE_DEVICE_LIST({list: audioInput, type: deviceTypes.audioInput}));
+
+                const audiooutput = value.filter( device => device.kind === "audiooutput");
+                dispatch(UPDATE_DEVICE_LIST({list: audiooutput, type: deviceTypes.audioOutput}));
+
+                const videoinput = value.filter( device => device.kind === "videoinput");
+                dispatch(UPDATE_DEVICE_LIST({list: videoinput, type: deviceTypes.videoInput}));
+
+            });
+           
             navigate('/meeting');
         }
         else{

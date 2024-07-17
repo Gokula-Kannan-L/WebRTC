@@ -32,6 +32,13 @@ const servers: RTCConfiguration = {
 //   iceCandidatePoolSize: 10,
 // };
 
+// Add SVC configuration to the RTCConfiguration
+const svcEncodingParams = [
+  { rid: 'q', maxBitrate: 100000, scalabilityMode: 'L1T3' },
+  { rid: 'h', maxBitrate: 500000, scalabilityMode: 'L1T3' },
+  { rid: 'f', maxBitrate: 1500000, scalabilityMode: 'L1T3' }
+];
+
 
 export const updateUserPreference = (userKey: string, preference: PreferenceType) => {
   const participantRef = getParticipantRef();
@@ -102,21 +109,29 @@ export const createAnswer = async(peerConnection: RTCPeerConnection, currentUser
 
 export const createconnection = (currentUser: UserType, newUser: ParticipantType, mediastream: MediaStream) => {
     
-    const peerconnection = new RTCPeerConnection(servers);
+    const peerConnection = new RTCPeerConnection(servers);
 
     mediastream.getTracks().forEach( (track: MediaStreamTrack) => {
-        peerconnection.addTrack(track, mediastream)
+      peerConnection.addTrack(track, mediastream)
     });
+
+     // Set SVC encoding parameters
+     const videoSender = peerConnection.getSenders().find((sender:RTCRtpSender) => sender?.track?.kind === 'video');
+     if (videoSender) {
+         const params = videoSender.getParameters();
+         params.encodings = svcEncodingParams;
+         videoSender.setParameters(params);
+     }
 
     let currentUserKey = currentUser.key;
     let newUserKey = Object.keys(newUser)[0];
 
     if(currentUserKey && newUserKey){
       let sortedIDs = [currentUserKey, newUserKey].sort((a, b) => a.localeCompare(b));
-      newUser[newUserKey].peerConnection = peerconnection;
+      newUser[newUserKey].peerConnection = peerConnection;
 
       if(sortedIDs[1] == currentUserKey ){
-        createOffer(peerconnection, sortedIDs[1], sortedIDs[0]);
+        createOffer(peerConnection, sortedIDs[1], sortedIDs[0]);
       }
 
     }

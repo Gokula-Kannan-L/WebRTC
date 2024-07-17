@@ -9,10 +9,14 @@ import CancelPresentationIcon from '@mui/icons-material/CancelPresentation';
 import { useDispatch, useSelector } from "react-redux";
 import { RESET, SET_LOCALSTREAM, UPDATE_USER } from "../../redux/meetingSlice";
 import { RootState } from "../../redux/store";
-import { Button } from "@mui/material";
+import { Button, MenuItem, Select } from "@mui/material";
 import { leaveMeeting } from "../../server/peerconnection";
 import { getDisplayMedia, getMediaStream } from "../../helpers/helper";
 import DialogBox from "../DialogBox/DialogBox";
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import VideoLabelIcon from '@mui/icons-material/VideoLabel';
+import VolumeUpIcon from '@mui/icons-material/VolumeUp';
 
 type MeetControlsProps = {
     handleSnackBar: (open: boolean, message: string) => void
@@ -22,6 +26,34 @@ const MeetControls:FunctionComponent<MeetControlsProps> = ({handleSnackBar}) => 
     const [dialogBox, setDialogBox] = useState<boolean>(false);
     const localstate = useSelector( (state: RootState) => state.meeting);
     const participants = useSelector( (state: RootState) => state.meeting.participants);
+
+    const [videoDeviceToggle, setVideoDeviceToggle] = useState<boolean>(false);
+    const [audiDeviceToggle, setAudioDeviceToggle] = useState<boolean>(false);
+
+    const updateNewStream = async() => {
+        const newStream = await getMediaStream({audio: {echoCancellation: true}});
+        console.log("New Stream ", newStream, newStream.getAudioTracks());
+
+       Object.keys(participants).forEach( (key) => {
+            let user = participants[key];
+            if(user.peerConnection){
+                let peerConnection = user.peerConnection as RTCPeerConnection;
+                let sender = peerConnection.getSenders().find( (s) => ( s.track?.kind === "audio"));
+                sender?.replaceTrack(newStream.getAudioTracks()[0]);
+            }
+       });
+
+       dispatch(SET_LOCALSTREAM(newStream));
+    }
+
+    useEffect( () => {
+        if(localstate.localStream?.getAudioTracks()[0].label != localstate.devicesList.audioInput[0].label){
+            console.log("changed from ", localstate.localStream?.getAudioTracks()[0].label, " to ", localstate.devicesList.audioInput[0].label);
+            updateNewStream();
+        }else{
+            console.log("Not changed from ", localstate.localStream?.getAudioTracks()[0].label, " to ", localstate.devicesList.audioInput[0].label)
+        }
+    }, [localstate.devicesList])
 
     const ToggelVideo = (video: boolean) => {
         if(localstate.localStream && !localstate.currentUser?.preference.screen){
@@ -57,7 +89,7 @@ const MeetControls:FunctionComponent<MeetControlsProps> = ({handleSnackBar}) => 
             const user = participants[key];
             const peerConnection: RTCPeerConnection = user?.peerConnection;
             if(peerConnection){
-                let userConnection = peerConnection.getSenders().find((s) => (s.track ? s.track.kind === "video" : false));
+                let userConnection = peerConnection.getSenders().find((s) => ( s.track?.kind === "video" ));
                 if(userConnection)
                     userConnection?.replaceTrack(stream.getVideoTracks()[0]);
                 else
@@ -117,28 +149,64 @@ const MeetControls:FunctionComponent<MeetControlsProps> = ({handleSnackBar}) => 
         handleLeave();
     }
 
+    const DropDown: FunctionComponent<{Items: MediaDeviceInfo[]}> = ({Items}) => {
+        const defaultItem = Items[0];
+        const newList = Items.slice(1);
+        return(
+            <Select defaultValue={defaultItem.deviceId} displayEmpty={true} sx={{"& .MuiOutlinedInput-notchedOutline": {border: 'none'}, width: '240px', border: 'none'}}>
+                <MenuItem value={defaultItem.deviceId} >{defaultItem.label}</MenuItem>
+                {
+                    newList.map( (item, index) => <MenuItem value={item.deviceId} key={index}>{item.label}</MenuItem>)
+                }
+            </Select>
+        )
+    }
+
     return(
         <div className="meet-controls" style={{height: '100%',display: 'flex', justifyContent:'center', alignItems: 'center', gap: '30px'}}>
-            <Button variant='contained' onClick={CopyMeetingID} sx={{color:'whitesmoke', fontSize:'15px', backgroundColor:'#F4C430', fontWeight: 500, textTransform: 'none'}}>Copy MeetID</Button>
-            {   
-                localstate.currentUser?.preference.video ? 
-                <div onClick={ () => ToggelVideo(false)} style={{cursor: 'pointer'}}><VideocamIcon sx={{fontSize:'25px', color: 'whitesmoke', borderRadius: '50%', backgroundColor: '#F4C430', padding: '10px'}} /></div> :
-                <div onClick={ () => ToggelVideo(true)} style={{cursor: 'pointer'}}><VideocamOffIcon sx={{fontSize:'25px', color: 'whitesmoke', borderRadius: '50%', backgroundColor: '#D2042D', padding: '10px'}}/></div> 
-            }
-            {
-                localstate.currentUser?.preference.audio ? 
-                <div onClick={ () => ToggleAudio(false)} style={{cursor: 'pointer'}}><MicIcon sx={{fontSize:'25px', color: 'whitesmoke', borderRadius: '50%', backgroundColor: '#F4C430', padding: '10px'}}/></div> :
-                <div onClick={ () => ToggleAudio(true)} style={{cursor: 'pointer'}}><MicOffIcon sx={{fontSize:'25px', color: 'whitesmoke', borderRadius: '50%', backgroundColor: '#D2042D', padding: '10px'}}/></div>
-            }
-            {   
-                localstate.currentUser?.preference.screen ?   
-                <div onClick={() => handleScreenShare(false)} style={{cursor: 'pointer'}}><CancelPresentationIcon sx={{fontSize:'25px', color: 'whitesmoke', borderRadius: '50%', backgroundColor: '#D2042D', padding: '10px'}}/></div> :
-                <div onClick={() => handleScreenShare(true)} style={{cursor: 'pointer'}}><PresentToAllIcon sx={{fontSize:'25px', color: 'whitesmoke', borderRadius: '50%', backgroundColor: '#F4C430', padding: '10px'}}/></div>
-            }
-            {localstate.hostInfo?.hostUserKey === localstate.currentUser?.key ?
-                <div onClick={() => setDialogBox(true)} style={{cursor: 'pointer'}}><CallEndIcon sx={{fontSize:'25px', color: 'whitesmoke', borderRadius: '50%', backgroundColor: '#D2042D', padding: '10px'}}/></div>:
-                <div onClick={handleLeave} style={{cursor: 'pointer'}}><CallEndIcon sx={{fontSize:'25px', color: 'whitesmoke', borderRadius: '50%', backgroundColor: '#D2042D', padding: '10px'}}/></div>
-            }
+            
+            {videoDeviceToggle && localstate.devicesList.videoInput.length && 
+                <div style={{position: 'absolute', bottom: '12%', padding: '0 10px 0 20px' ,backgroundColor: '#93C572', borderRadius: '30px', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                    <VideoLabelIcon/><DropDown Items={localstate.devicesList.videoInput}/>
+                </div>}
+            
+            {audiDeviceToggle && localstate.devicesList.audioInput.length && localstate.devicesList.audioOutput.length && 
+                <div style={{position: 'absolute', bottom: '12%', padding: '0 10px 0 20px' ,backgroundColor: '#93C572', borderRadius: '30px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '30px'}}>
+                    <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}><MicIcon/><DropDown Items={localstate.devicesList.audioInput}/></div>
+                    <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}><VolumeUpIcon/><DropDown Items={localstate.devicesList.audioOutput}/></div>
+                </div>}
+            
+            <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '10px 50px', gap: '24px', borderRadius: '40px', backgroundColor: '#899499'}}>
+                <Button variant='contained' onClick={CopyMeetingID} sx={{color:'whitesmoke', fontSize:'15px', backgroundColor:'#4CBB17', fontWeight: 500, textTransform: 'none'}}>Copy MeetID</Button>
+                
+                <div style={{display: 'flex', gap: '0px', justifyContent: 'center', alignItems: 'center', backgroundColor: '#93C572', borderRadius: '40px', padding: '0 10px 0 0'}}> 
+                    {  
+                        localstate.currentUser?.preference.video ? 
+                        <div onClick={ () => ToggelVideo(false)} style={{cursor: 'pointer', height: '44px'}}><VideocamIcon sx={{fontSize:'25px', color: 'whitesmoke', borderRadius: '50%', backgroundColor: '#4CBB17', padding: '10px'}} /> </div> :
+                        <div onClick={ () => ToggelVideo(true)} style={{cursor: 'pointer', height: '44px'}}><VideocamOffIcon sx={{fontSize:'25px', color: 'whitesmoke', borderRadius: '50%', backgroundColor: '#D2042D', padding: '10px'}}/></div> 
+                    }
+                    {videoDeviceToggle ? <div onClick={ () => {setVideoDeviceToggle(false)}}><KeyboardArrowUpIcon /></div> : <div onClick={ () => {setAudioDeviceToggle(false); setVideoDeviceToggle(true)}}><KeyboardArrowDownIcon /></div>}
+                </div>
+                
+                <div style={{display: 'flex', gap: '0px', justifyContent: 'center', alignItems: 'center', backgroundColor: '#93C572', borderRadius: '40px', padding: '0 10px 0 0'}}> 
+                    {
+                        localstate.currentUser?.preference.audio ? 
+                        <div onClick={ () => ToggleAudio(false)} style={{cursor: 'pointer', height: '44px'}}><MicIcon sx={{fontSize:'25px', color: 'whitesmoke', borderRadius: '50%', backgroundColor: '#4CBB17', padding: '10px'}}/></div> :
+                        <div onClick={ () => ToggleAudio(true)} style={{cursor: 'pointer', height: '44px'}}><MicOffIcon sx={{fontSize:'25px', color: 'whitesmoke', borderRadius: '50%', backgroundColor: '#D2042D', padding: '10px'}}/></div>
+                    }
+                    {audiDeviceToggle ? <div onClick={ () => setAudioDeviceToggle(false)}><KeyboardArrowUpIcon /></div> : <div onClick={ () => {setVideoDeviceToggle(false); setAudioDeviceToggle(true)}}><KeyboardArrowDownIcon /></div>}
+                </div>
+                
+                {   
+                    localstate.currentUser?.preference.screen ?   
+                    <div onClick={() => handleScreenShare(false)} style={{cursor: 'pointer'}}><CancelPresentationIcon sx={{fontSize:'25px', color: 'whitesmoke', borderRadius: '50%', backgroundColor: '#D2042D', padding: '10px'}}/></div> :
+                    <div onClick={() => handleScreenShare(true)} style={{cursor: 'pointer'}}><PresentToAllIcon sx={{fontSize:'25px', color: 'whitesmoke', borderRadius: '50%', backgroundColor: '#4CBB17', padding: '10px'}}/></div>
+                }
+                {localstate.hostInfo?.hostUserKey === localstate.currentUser?.key ?
+                    <div onClick={() => setDialogBox(true)} style={{cursor: 'pointer'}}><CallEndIcon sx={{fontSize:'25px', color: 'whitesmoke', borderRadius: '50%', backgroundColor: '#D2042D', padding: '10px'}}/></div>:
+                    <div onClick={handleLeave} style={{cursor: 'pointer'}}><CallEndIcon sx={{fontSize:'25px', color: 'whitesmoke', borderRadius: '50%', backgroundColor: '#D2042D', padding: '10px'}}/></div>
+                }
+            </div>
             <DialogBox open={dialogBox} title="You're the host." content="Are you sure, do you want to end the call ?" agreeBtnMsg="Yes" disagreeMsg="No" handleAgree={handleEndMeeting} handleDisagree={ () => setDialogBox(false)}/>
         </div>
     )

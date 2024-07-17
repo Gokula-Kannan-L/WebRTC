@@ -1,7 +1,5 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { InitializeListeners, createconnection, updateUserPreference } from "../server/peerconnection";
-import { getMeetingInfo } from "../server/firebase";
-
 
 export type UserType =  {
     username: string,
@@ -148,20 +146,20 @@ export const meetingSlice = createSlice({
                 if(payload[participantkey]?.peerConnection){
                     
                     const peerConnection = payload[participantkey]?.peerConnection as RTCPeerConnection;
-                    const remoteStream = new MediaStream();
 
                     peerConnection.ontrack = (event: RTCTrackEvent) => {
                         console.log("ontrack -----", event);
+                        const remoteStream = new MediaStream();
                         event.streams[0].getTracks().forEach((track) => {
                             remoteStream.addTrack(track);
                         });
-                    };
 
-                    state.participants[participantkey] = {
-                        ...state.participants[participantkey],
-                        remoteStream: remoteStream,
-                        onTrackSet: true
-                    }
+                        state.participants[participantkey] = {
+                            ...state.participants[participantkey],
+                            remoteStream: remoteStream,
+                            onTrackSet: true
+                        }
+                    };
                 }
 
                 if(!state.IsScreenSharing && payload[participantkey].preference.screen){

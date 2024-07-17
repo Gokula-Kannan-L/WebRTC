@@ -39,20 +39,21 @@ const MeetControls:FunctionComponent<MeetControlsProps> = ({handleSnackBar}) => 
             if(newStream){
                 Object.keys(participants).forEach( (key) => {
                     let user = participants[key];
-                    console.log(user)
+                    
                     if(user.peerConnection){
                         let peerConnection = user.peerConnection as RTCPeerConnection;
                       
                         let senderAudio = peerConnection.getSenders().find( (s) => s.track?.kind == "audio");
                         let senderVideo = peerConnection.getSenders().find( (s) => s.track?.kind == "video");
-                        if(senderAudio && senderVideo && localstate?.localStream){
+                        if(senderAudio && senderVideo){
                             senderAudio.replaceTrack(newStream.getAudioTracks()[0]);
                             senderVideo.replaceTrack(newStream.getVideoTracks()[0]);
-                            dispatch(SET_LOCALSTREAM(newStream));
+                           
                             console.log("updated")
                         }
                     }
-                })
+                });
+                dispatch(SET_LOCALSTREAM(newStream));
             }
         }
     }

@@ -13,7 +13,7 @@ const configuration:MediaEncodingConfiguration = {
   };
 
 export const getMediaStream = async() => {
-    await navigator.mediaCapabilities.encodingInfo(configuration)
+    await navigator.mediaCapabilities.encodingInfo(configuration);
 
     const stream = await navigator.mediaDevices.getUserMedia({video: {
         width: { min: 640, ideal: 1920, max: 1920 },

@@ -147,13 +147,15 @@ export const meetingSlice = createSlice({
                     
                     const peerConnection = payload[participantkey]?.peerConnection as RTCPeerConnection;
 
+                    const remoteStream = new MediaStream();
+
                     peerConnection.ontrack = (event: RTCTrackEvent) => {
                         console.log("ontrack -----", event);
-                        const remoteStream = new MediaStream();
+                        
                         event.streams[0].getTracks().forEach((track) => {
                             remoteStream.addTrack(track);
                         });
-
+                        
                         state.participants[participantkey] = {
                             ...state.participants[participantkey],
                             remoteStream: remoteStream,

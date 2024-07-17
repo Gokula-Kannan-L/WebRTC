@@ -30,16 +30,34 @@ const MeetControls:FunctionComponent<MeetControlsProps> = ({handleSnackBar}) => 
     const [videoDeviceToggle, setVideoDeviceToggle] = useState<boolean>(false);
     const [audiDeviceToggle, setAudioDeviceToggle] = useState<boolean>(false);
 
-    const updateStream = () => {
-
+    const updateStream = async(deviceId: string, kind: string) => {
+        if(kind == 'audio'){
+            await navigator.mediaDevices.getUserMedia({video: {
+                    width: { min: 640, ideal: 1920, max: 1920 },
+                    height: { min: 400, ideal: 1080 },
+                    frameRate: { max: 30 }
+                }, audio: { echoCancellation: true, deviceId: {exact: deviceId}}}).then( (newStream) => {
+                Object.keys(participants).forEach( (key) => {
+                    let user = participants[key];
+                    if(user.peerConnection){
+                        let peerConnection = user.peerConnection as RTCPeerConnection;
+                        let sender = peerConnection.getSenders().find( (s) => s.track?.kind == kind);
+                        if(sender){
+                            sender.replaceTrack(newStream.getAudioTracks()[0]);
+                            dispatch(SET_LOCALSTREAM(newStream));
+                            console.log("updated")
+                        }
+                    }
+                })
+            })
+        }
     }
 
     useEffect( () => {
        if(localstate.localStream?.getAudioTracks()[0].label !== localstate.devicesList.audioInput[0].label){
-        console.log("Device Changed From ", localstate.localStream?.getAudioTracks()[0].label, " to ", localstate.devicesList.audioInput[0].label);
+            console.log("Device Changed From ", localstate.localStream?.getAudioTracks()[0].label, " to ", localstate.devicesList.audioInput[0].label);
        
-        console.log("local :" , localstate.localStream?.getTracks());
-
+            updateStream(localstate.devicesList.audioInput[0].deviceId, localstate.devicesList.audioInput[0].kind);
        }
     }, [localstate.devicesList])
 

@@ -8,7 +8,7 @@ const svcEncodingParams = [
     { rid: 'h', maxBitrate: 500000, scalabilityMode: 'L1T3' },
     { rid: 'f', maxBitrate: 1500000, scalabilityMode: 'L1T3' }
   ];
-  
+
 export type UserType =  {
     username: string,
     userid: string,
@@ -156,12 +156,8 @@ export const meetingSlice = createSlice({
                     const peerConnection = payload[participantkey]?.peerConnection as RTCPeerConnection;
                     const remoteStream = new MediaStream();
 
-                    peerConnection.addEventListener('track' , (event) => {
-                        console.log("Event Receiver Ref", event)
-                    })
-
-
                     peerConnection.ontrack = (event: RTCTrackEvent) => {
+                        console.log("ontrack -----", event);
                         event.streams[0].getTracks().forEach((track) => {
                             remoteStream.addTrack(track);
                         });

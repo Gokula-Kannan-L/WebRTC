@@ -30,40 +30,39 @@ const MeetControls:FunctionComponent<MeetControlsProps> = ({handleSnackBar}) => 
     const [videoDeviceToggle, setVideoDeviceToggle] = useState<boolean>(false);
     const [audiDeviceToggle, setAudioDeviceToggle] = useState<boolean>(false);
 
-    const updateStream = async(deviceId: string, kind: string) => {
-     
-        if(kind == "audio" && deviceId){
-            const newStream = await navigator.mediaDevices.getUserMedia({ video: {deviceId: {exact: deviceId} },  audio: { echoCancellation: true, deviceId: { exact: deviceId}}});
-            console.log("New Stream : ", newStream.getTracks());
-
-            if(newStream){
-                Object.keys(participants).forEach( (key) => {
-                    let user = participants[key];
+    const updateStream = async() => {
+        const newStream = await navigator.mediaDevices.getUserMedia({ video: true,  audio: { echoCancellation: true, }});
+        if(newStream){
+            Object.keys(participants).forEach( async(key) => {
+                let user = participants[key];
+                
+                if(user.peerConnection){
+                    let peerConnection = user.peerConnection as RTCPeerConnection;
                     
-                    if(user.peerConnection){
-                        let peerConnection = user.peerConnection as RTCPeerConnection;
-                      
-                        let senderAudio = peerConnection.getSenders().find( (s) => s.track?.kind == "audio");
-                        let senderVideo = peerConnection.getSenders().find( (s) => s.track?.kind == "video");
-                        if(senderAudio && senderVideo){
-                            senderAudio.replaceTrack(newStream.getAudioTracks()[0]);
-                            senderVideo.replaceTrack(newStream.getVideoTracks()[0]);
-                           
-                            console.log("updated")
+                    peerConnection.getSenders().find( async(sender) => {
+                        if(sender.track?.kind == "audio"){
+                            await sender.replaceTrack(newStream.getAudioTracks()[0]);
+                        }else if(sender.track?.kind == "video"){
+                            await sender.replaceTrack(newStream.getVideoTracks()[0]);
                         }
-                    }
-                });
-                dispatch(SET_LOCALSTREAM(newStream));
-            }
+                    
+                    });
+
+                }
+            });
+            dispatch(SET_LOCALSTREAM(newStream));
         }
     }
 
     useEffect( () => {
        if(localstate.localStream?.getAudioTracks()[0].label !== localstate.devicesList.audioInput[0].label){
             console.log("Device Changed From ", localstate.localStream?.getAudioTracks()[0].label, " to ", localstate.devicesList.audioInput[0].label);
-            console.log(localstate.devicesList.audioInput[0])
-            updateStream(localstate.devicesList.audioInput[0].deviceId, "audio");
+            updateStream();
        }
+       if(localstate.localStream?.getVideoTracks()[0].label !== localstate.devicesList.videoInput[0].label){
+            console.log("Device Changed From ", localstate.localStream?.getVideoTracks()[0].label, " to ", localstate.devicesList.videoInput[0].label);
+            updateStream();
+        }
     }, [localstate.devicesList])
 
     const ToggelVideo = (video: boolean) => {

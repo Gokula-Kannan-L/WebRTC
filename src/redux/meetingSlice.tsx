@@ -139,15 +139,18 @@ export const meetingSlice = createSlice({
                     createconnection(state.currentUser, payload, state.localStream);
                 }
               
-                if(state.currentUser.key === participantkey && payload[participantkey]?.peerConnection){
-                    console.log("NEVER CALL------------------");
-                    state.peerConnection = payload[participantkey].peerConnection;
-                }
                 state.participants = {...state.participants, ...payload};
 
                 if(payload[participantkey]?.peerConnection){
                     
+                    let peerConnection = payload[participantkey]?.peerConnection as RTCPeerConnection;
                     const remoteStream = new MediaStream();
+
+                    peerConnection.ontrack = async(event: RTCTrackEvent) => {
+                        event.streams[0].getTracks().forEach((track: MediaStreamTrack) => {
+                            remoteStream.addTrack(track);
+                        });
+                    };
 
                     state.participants[participantkey] = {
                         ...state.participants[participantkey],
@@ -189,18 +192,18 @@ export const meetingSlice = createSlice({
             state.participants = participants;
         },
 
-        ADD_REMOTESTREAM: (state, action: PayloadAction<{key: string, remoteStream: MediaStream}>) => {
-            const {payload} = action;
+        // ADD_REMOTESTREAM: (state, action: PayloadAction<{key: string, remoteStream: MediaStream}>) => {
+        //     const {payload} = action;
 
-            console.log("Updating Remote Stream.....", payload);
-            if(state.participants[payload.key]){
-                state.participants[payload.key] = {
-                    ...state.participants[payload.key],
-                    remoteStream: payload.remoteStream,
-                    onTrackSet: true
-                }
-            }
-        },
+        //     console.log("Updating Remote Stream.....", payload);
+        //     if(state.participants[payload.key]){
+        //         state.participants[payload.key] = {
+        //             ...state.participants[payload.key],
+        //             remoteStream: payload.remoteStream,
+        //             onTrackSet: true
+        //         }
+        //     }
+        // },
 
         UPDATE_SCREEN_SHARE: (state, action: PayloadAction<{userkey:string, screen: boolean}>) => {
             let {payload} = action;
@@ -231,6 +234,6 @@ export const meetingSlice = createSlice({
     }
 });
 
-export const {SET_MEET_ID, SET_HOST, SET_USER, UPDATE_USER, SET_LOCALSTREAM, ADD_PARTICIPANTS, UPDATE_PARTICIPANT, REMOVE_PARTICIPANT, ADD_REMOTESTREAM, UPDATE_SCREEN_SHARE, UPDATE_DEVICE_LIST, RESET} = meetingSlice.actions;
+export const {SET_MEET_ID, SET_HOST, SET_USER, UPDATE_USER, SET_LOCALSTREAM, ADD_PARTICIPANTS, UPDATE_PARTICIPANT, REMOVE_PARTICIPANT, UPDATE_SCREEN_SHARE, UPDATE_DEVICE_LIST, RESET} = meetingSlice.actions;
 
 export default meetingSlice.reducer;

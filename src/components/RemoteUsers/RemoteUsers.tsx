@@ -2,7 +2,6 @@ import React, { FunctionComponent, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
 import RemoteTile from '../VideoTile/RemoteTile/RemoteTile';
-import { ADD_REMOTESTREAM } from '../../redux/meetingSlice';
 
 const RemoteUsers: FunctionComponent = () => {
 
@@ -34,30 +33,7 @@ const RemoteUsers: FunctionComponent = () => {
     //             });
     //         }
     //     })
-    // }, [participants])
-
-    useEffect( () => {
-        if(participants){
-            Object.keys(participants).forEach( (key) => {
-                let user = participants[key];
-
-                if(user.peerConnection && user.remoteStream ){
-                    let peerConnection = user.peerConnection as RTCPeerConnection;
-
-                    peerConnection.ontrack = async(event: RTCTrackEvent) => {
-                        console.log("ontrack -----", event);
-                        let remoteStream = user.remoteStream as MediaStream;
-                        event.streams[0].getTracks().forEach((track: MediaStreamTrack) => {
-                            remoteStream.addTrack(track);
-                        });
-                        dispatch(ADD_REMOTESTREAM({key, remoteStream}));
-                    };
-                    
-                   
-                }
-            })
-        }
-    }, [participants]);
+    // }, [participants]);
 
     return(
         <div className='remote-container' style={{overflowY: "auto", height: '100%'}}>

@@ -108,6 +108,8 @@ export const createconnection = (currentUser: UserType, newUser: ParticipantType
       peerConnection.addTrack(track, mediastream)
     });
 
+    console.log("senders ::::: ", peerConnection.getSenders());
+
     let currentUserKey = currentUser.key;
     let newUserKey = Object.keys(newUser)[0];
 

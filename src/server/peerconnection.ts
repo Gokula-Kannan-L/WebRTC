@@ -107,8 +107,20 @@ export const createconnection = (currentUser: UserType, newUser: ParticipantType
     mediastream.getTracks().forEach( (track: MediaStreamTrack) => {
       peerConnection.addTrack(track, mediastream)
     });
+    const videoSender = peerConnection.getSenders().find( s => s.track?.kind == 'video')
+    if(videoSender){
+        const parameters = videoSender.getParameters();
+       
+        parameters.encodings = [
+          { rid: 'high', maxBitrate: 2000000, scaleResolutionDownBy: 1.0, maxFramerate: 30, priority: 'high', active: true },
+          { rid: 'medium', maxBitrate: 1000000, scaleResolutionDownBy: 2.0, maxFramerate: 15, priority: 'medium', active: true },
+          { rid: 'low', maxBitrate: 500000, scaleResolutionDownBy: 4.0, maxFramerate: 10, priority: 'low', active: true }
+      ];
 
-    console.log("senders ::::: ", peerConnection.getSenders());
+        console.log("parameters :::: ", parameters);
+
+        videoSender.setParameters(parameters);
+    }
 
     let currentUserKey = currentUser.key;
     let newUserKey = Object.keys(newUser)[0];

@@ -110,16 +110,19 @@ export const createconnection = (currentUser: UserType, newUser: ParticipantType
     const videoSender = peerConnection.getSenders().find( s => s.track?.kind == 'video')
     if(videoSender){
         const parameters = videoSender.getParameters();
-       
-        parameters.encodings = [
-          { rid: 'high', maxBitrate: 2000000, scaleResolutionDownBy: 1.0, maxFramerate: 30, priority: 'high', active: true },
-          { rid: 'medium', maxBitrate: 1000000, scaleResolutionDownBy: 2.0, maxFramerate: 15, priority: 'medium', active: true },
-          { rid: 'low', maxBitrate: 500000, scaleResolutionDownBy: 4.0, maxFramerate: 10, priority: 'low', active: true }
-      ];
 
-        console.log("parameters :::: ", parameters);
+        const newParameters: RTCRtpSendParameters = {
+          ...parameters,
+          encodings: [
+              { rid: 'high', maxBitrate: 2000000, scaleResolutionDownBy: 1.0, maxFramerate: 30, priority: 'high', active: true },
+              { rid: 'medium', maxBitrate: 1000000, scaleResolutionDownBy: 2.0, maxFramerate: 15, priority: 'medium', active: true },
+              { rid: 'low', maxBitrate: 500000, scaleResolutionDownBy: 4.0, maxFramerate: 10, priority: 'low', active: true }
+          ]
+      };
 
-        videoSender.setParameters(parameters);
+        console.log("parameters :::: ", newParameters);
+
+        videoSender.setParameters(newParameters);
     }
 
     let currentUserKey = currentUser.key;

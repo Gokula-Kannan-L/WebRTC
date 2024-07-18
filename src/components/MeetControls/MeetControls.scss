@@ -1,0 +1,35 @@
+.meet-controls{
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    .video-dropdown, .audio-dropdown{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 30px;
+        background-color: var(--primary-bg-color-1);
+        padding: 0 10px 0 20px;
+        position: absolute;
+        bottom: 12%;   
+    }
+    .audio-dropdown{
+        gap: 30px;
+        .audio-dropdown-child{
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    }
+
+    .meet-controls-main{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 10px 50px;
+        gap: 24px;
+        border-radius: 40px;
+        background-color: var(--bg-color-controls);
+    }
+}

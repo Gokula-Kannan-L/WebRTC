@@ -5,7 +5,7 @@ import store from './redux/store';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter } from 'react-router-dom';
-import './index.css';
+import "./global.css";
 console.log(process.env.REACT_APP_TURN_URL);
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement

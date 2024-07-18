@@ -152,6 +152,8 @@ export const meetingSlice = createSlice({
                         });
                     };
 
+                    console.log("Sender : " ,peerConnection.getSenders());
+
                     state.participants[participantkey] = {
                         ...state.participants[participantkey],
                         remoteStream: remoteStream,

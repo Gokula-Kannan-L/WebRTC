@@ -1,4 +1,5 @@
 import React, { FunctionComponent, useEffect, useState } from "react";
+import './MeetControls.scss';
 import VideocamIcon from '@mui/icons-material/Videocam';
 import VideocamOffIcon from '@mui/icons-material/VideocamOff';
 import MicIcon from '@mui/icons-material/Mic';
@@ -173,20 +174,26 @@ const MeetControls:FunctionComponent<MeetControlsProps> = ({handleSnackBar}) => 
     }
 
     return(
-        <div className="meet-controls" style={{height: '100%',display: 'flex', justifyContent:'center', alignItems: 'center', gap: '30px'}}>
+        <div className="meet-controls">
             
-            {videoDeviceToggle && localstate.devicesList.videoInput.length && 
-                <div style={{position: 'absolute', bottom: '12%', padding: '0 10px 0 20px' ,backgroundColor: '#93C572', borderRadius: '30px', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+            {
+            /* Video Option */
+            videoDeviceToggle && localstate.devicesList.videoInput.length && 
+                <div className="video-dropdown">
                     <VideoLabelIcon/><DropDown Items={localstate.devicesList.videoInput}/>
-                </div>}
+                </div>
+            }
             
-            {audiDeviceToggle && localstate.devicesList.audioInput.length && localstate.devicesList.audioOutput.length && 
-                <div style={{position: 'absolute', bottom: '12%', padding: '0 10px 0 20px' ,backgroundColor: '#93C572', borderRadius: '30px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '30px'}}>
-                    <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}><MicIcon/><DropDown Items={localstate.devicesList.audioInput}/></div>
-                    <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}><VolumeUpIcon/><DropDown Items={localstate.devicesList.audioOutput}/></div>
-                </div>}
+            {
+            /* Audio Options */
+            audiDeviceToggle && localstate.devicesList.audioInput.length && localstate.devicesList.audioOutput.length && 
+                <div className="audio-dropdown">
+                    <div className="audio-dropdown-child"><MicIcon/><DropDown Items={localstate.devicesList.audioInput}/></div>
+                    <div className="audio-dropdown-child"><VolumeUpIcon/><DropDown Items={localstate.devicesList.audioOutput}/></div>
+                </div>
+            }
             
-            <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '10px 50px', gap: '24px', borderRadius: '40px', backgroundColor: '#899499'}}>
+            <div className="meet-controls-main">
                 <Button variant='contained' onClick={CopyMeetingID} sx={{color:'whitesmoke', fontSize:'15px', backgroundColor:'#4CBB17', fontWeight: 500, textTransform: 'none'}}>Copy MeetID</Button>
                 
                 <div style={{display: 'flex', gap: '0px', justifyContent: 'center', alignItems: 'center', backgroundColor: '#93C572', borderRadius: '40px', padding: '0 10px 0 0'}}> 

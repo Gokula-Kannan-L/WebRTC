@@ -100,7 +100,7 @@ export const createAnswer = async(peerConnection: RTCPeerConnection, currentUser
     await writeData(pushNewNode(answerRef), {answerPayload});
 }
 
-export const createconnection = (currentUser: UserType, newUser: ParticipantType, mediastream: MediaStream) => {
+export const createconnection = async (currentUser: UserType, newUser: ParticipantType, mediastream: MediaStream) => {
     
     const peerConnection = new RTCPeerConnection(servers);
 
@@ -109,20 +109,9 @@ export const createconnection = (currentUser: UserType, newUser: ParticipantType
     });
     const videoSender = peerConnection.getSenders().find( s => s.track?.kind == 'video')
     if(videoSender){
-        const parameters = videoSender.getParameters();
-
-        const newParameters: RTCRtpSendParameters = {
-          ...parameters,
-          encodings: [
-              { rid: 'high', maxBitrate: 2000000, scaleResolutionDownBy: 1.0, maxFramerate: 30, priority: 'high', active: true },
-              { rid: 'medium', maxBitrate: 1000000, scaleResolutionDownBy: 2.0, maxFramerate: 15, priority: 'medium', active: true },
-              { rid: 'low', maxBitrate: 500000, scaleResolutionDownBy: 4.0, maxFramerate: 10, priority: 'low', active: true }
-          ]
-      };
-
-        console.log("parameters :::: ", newParameters);
-
-        videoSender.setParameters(newParameters);
+        const parameters =  videoSender.getParameters();
+        console.log(parameters);
+        
     }
 
     let currentUserKey = currentUser.key;

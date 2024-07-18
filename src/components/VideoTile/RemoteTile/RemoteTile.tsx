@@ -32,6 +32,20 @@ const RemoteTile:FunctionComponent<RemoteUserType> = ({remoteUser, index, IsHost
         }
     },[remoteUser]);
 
+
+    useEffect( ()=> {
+        if(remoteUser.peerConnection){
+            let pc =remoteUser.peerConnection as RTCPeerConnection;
+            const videoSender = pc.getSenders().find( s => s.track?.kind == 'video')
+            if(videoSender){
+                const parameters =  videoSender.getParameters();
+                console.log(parameters);
+                
+            }
+        
+        }
+    },[])
+
     return(
         <>
             {remoteUser.preference.video ?

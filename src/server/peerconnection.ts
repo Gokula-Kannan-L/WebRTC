@@ -107,12 +107,6 @@ export const createconnection = async (currentUser: UserType, newUser: Participa
     mediastream.getTracks().forEach( (track: MediaStreamTrack) => {
       peerConnection.addTrack(track, mediastream)
     });
-    const videoSender = peerConnection.getSenders().find( s => s.track?.kind == 'video')
-    if(videoSender){
-        const parameters =  videoSender.getParameters();
-        console.log(parameters);
-        
-    }
 
     let currentUserKey = currentUser.key;
     let newUserKey = Object.keys(newUser)[0];

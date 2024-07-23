@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect } from 'react'
+import React, { FunctionComponent, useCallback, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
 import RemoteTile from '../VideoTile/RemoteTile/RemoteTile';
@@ -35,24 +35,28 @@ const RemoteUsers: FunctionComponent = () => {
     //     })
     // }, [participants]);
 
+
+    const RemoteTiles = useCallback( () => {
+        return Object.keys(participants).map((key, index) => {
+            const user = participants[key];
+
+            if (user?.IsCurrentUser)
+                return null;
+
+            const IsHost = (host?.hostUserKey == key) ? true : false;
+            if (user?.remoteStream)
+                return (
+                    <div className='remote-tile' style={{ padding: '10px', position: 'relative' }} key={index}>
+                        <RemoteTile remoteUser={user} index={index} IsHost={IsHost} />
+                    </div>
+                );
+        });
+    }, [participants, host]);
+
     return(
         <div className='remote-container' style={{overflowY: "auto", height: '100%'}}>
             {
-                Object.keys(participants).length > 0 && Object.keys(participants).map( (key, index) => {
-                    const user = participants[key];
-                   
-                    if(user?.IsCurrentUser)
-                        return;
-                    
-                    const IsHost = (host?.hostUserKey == key ) ? true : false;
-                    if(user?.remoteStream)
-                        
-                        return( 
-                            <div className='remote-tile' style={{padding: '10px', position: 'relative'}} key={index}>
-                                <RemoteTile  remoteUser={user} index={index} IsHost={IsHost}/>
-                            </div>
-                        );
-                })
+                Object.keys(participants).length > 0 && RemoteTiles()
             }
         </div>
     )

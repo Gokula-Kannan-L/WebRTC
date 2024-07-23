@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useRef, useState } from "react";
+import React, { FunctionComponent, memo, useEffect, useRef, useState } from "react";
 import { Avatar } from "@mui/material";
 import MicIcon from '@mui/icons-material/Mic';
 import MicOffIcon from '@mui/icons-material/MicOff';
@@ -72,4 +72,4 @@ const RemoteTile:FunctionComponent<RemoteUserType> = ({remoteUser, index, IsHost
     );
 }
 
-export default RemoteTile;
+export default memo(RemoteTile);
